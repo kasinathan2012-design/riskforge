@@ -15,23 +15,32 @@ def extract_graph_features(G: nx.DiGraph) -> pd.DataFrame:
     in_weight  = dict(G.in_degree(weight="weight"))
     out_weight = dict(G.out_degree(weight="weight"))
 
+    # PageRank — fast even on 9M nodes
+    print("[StructEngine] Computing PageRank...")
     pagerank = nx.pagerank(G, alpha=0.85, weight="weight")
 
-    if G.number_of_nodes() > 10_000:
-        print("[StructEngine] Large graph — approximating betweenness with k=200 samples")
-        betweenness = nx.betweenness_centrality(G, k=200, normalized=True)
-    else:
-        betweenness = nx.betweenness_centrality(G, normalized=True)
+    # Betweenness removed (O(n²), hours on 9M nodes).
+    # Replaced with two fast fraud-relevant features:
+
+    # Fan-out ratio: high out/in degree ratio = potential money mule or distributor
+    fan_out = {
+        n: out_degree.get(n, 0) / max(in_degree.get(n, 1), 1)
+        for n in G.nodes()
+    }
+
+    # Self-loop: account transacts with itself
+    self_loops = {n: 1 if G.has_edge(n, n) else 0 for n in G.nodes()}
 
     nodes = list(G.nodes())
     features = pd.DataFrame({
-        "account":     nodes,
-        "in_degree":   [in_degree.get(n, 0)   for n in nodes],
-        "out_degree":  [out_degree.get(n, 0)  for n in nodes],
-        "in_weight":   [in_weight.get(n, 0)   for n in nodes],
-        "out_weight":  [out_weight.get(n, 0)  for n in nodes],
-        "pagerank":    [pagerank.get(n, 0)    for n in nodes],
-        "betweenness": [betweenness.get(n, 0) for n in nodes],
+        "account":    nodes,
+        "in_degree":  [in_degree.get(n, 0)  for n in nodes],
+        "out_degree": [out_degree.get(n, 0) for n in nodes],
+        "in_weight":  [in_weight.get(n, 0)  for n in nodes],
+        "out_weight": [out_weight.get(n, 0) for n in nodes],
+        "pagerank":   [pagerank.get(n, 0)   for n in nodes],
+        "fan_out":    [fan_out.get(n, 0)    for n in nodes],
+        "self_loop":  [self_loops.get(n, 0) for n in nodes],
     })
 
     print(f"[StructEngine] Extracted features for {len(features):,} accounts")
@@ -48,7 +57,7 @@ def score_structural_risk(features: pd.DataFrame,
     df["label"] = df["label"].fillna(0).astype(int)
 
     feature_cols = ["in_degree", "out_degree", "in_weight",
-                    "out_weight", "pagerank", "betweenness"]
+                    "out_weight", "pagerank", "fan_out", "self_loop"]
 
     X = df[feature_cols].fillna(0)
     y = df["label"]
