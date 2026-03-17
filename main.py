@@ -54,6 +54,11 @@ def run_pipeline(dataset: str, path: str):
 
     return final_scores
 
+    # Step 7: Evaluation
+    print("\n>>> STEP 7: Ablation Study")
+    from src.evaluator import run_ablation
+    run_ablation("data/results.csv", df)
+
 
 if __name__ == "__main__":
     run_pipeline(

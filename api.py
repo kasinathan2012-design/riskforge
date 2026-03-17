@@ -160,7 +160,15 @@ def get_stats():
         "fraud_rate":         float(txdf["label"].mean()) if txdf is not None else 0,
     }
 
-
+@app.get("/api/ablation")
+def get_ablation():
+    path = "data/ablation.json"
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="No ablation results — run main.py first")
+    import json
+    with open(path) as f:
+        return json.load(f)
+    
 @app.post("/api/inject-transaction")
 def inject_transaction(req: InjectRequest):
     if state["model"] is None:

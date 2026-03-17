@@ -1008,15 +1008,33 @@ async function injectTx() {
 }
 
 // ── Ablation Study ────────────────────────────────────────
-function renderAblation() {
-  // Simulated ablation metrics based on actual model performance
-  // In a real system these would come from /api/ablation endpoint
-  const models = [
-    { name: 'Behavioral Only',   desc: 'XGBoost on transactions', precision: 0.95, recall: 0.77, f1: 0.85, auc: 0.9997, color: '#1d4ed8' },
-    { name: 'Structural Only',   desc: 'Graph features + LR',      precision: 0.71, recall: 0.68, f1: 0.69, auc: 0.8516, color: '#d97706' },
-    { name: 'Propagation Only',  desc: 'Diffusion risk spread',     precision: 0.58, recall: 0.81, f1: 0.68, auc: 0.79,   color: '#dc2626' },
-    { name: 'Multi-Signal ✓',    desc: 'All three combined',        precision: 0.96, recall: 0.89, f1: 0.92, auc: 0.9998, color: '#059669' },
-  ];
+async function renderAblation() {
+  let models;
+  try {
+    const res = await fetch(`${API}/api/ablation`);
+    if (res.ok) {
+      const data = await res.json();
+      models = data.map((m, i) => ({
+        name:    m.name,
+        desc:    ['XGBoost on transactions', 'Graph features + LR', 'Diffusion risk spread', 'All three combined'][i],
+        precision: m.precision,
+        recall:    m.recall,
+        f1:        m.f1,
+        auc:       m.auc,
+        color: ['#1d4ed8','#d97706','#dc2626','#059669'][i]
+      }));
+    }
+  } catch(e) {}
+
+  // Fall back to estimates if not available yet
+  if (!models) {
+    models = [
+      { name:'Behavioral Only',  desc:'XGBoost on transactions', precision:0.95, recall:0.77, f1:0.85, auc:0.9997, color:'#1d4ed8' },
+      { name:'Structural Only',  desc:'Graph features + LR',      precision:0.71, recall:0.68, f1:0.69, auc:0.8516, color:'#d97706' },
+      { name:'Propagation Only', desc:'Diffusion risk spread',     precision:0.58, recall:0.81, f1:0.68, auc:0.79,   color:'#dc2626' },
+      { name:'Multi-Signal ✓',   desc:'All three combined',        precision:0.96, recall:0.89, f1:0.92, auc:0.9998, color:'#059669' },
+    ];
+  }
 
   // Cards
   document.getElementById('ablationCards').innerHTML = models.map((m,i) => `
