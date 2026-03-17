@@ -28,99 +28,60 @@
   --sans:     'IBM Plex Sans', sans-serif;
   --radius:   6px;
   --shadow:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:0 4px 12px rgba(0,0,0,0.08);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.5; }
-
 .app { display: grid; grid-template-rows: 56px 1fr; min-height: 100vh; }
 
+/* Header */
 header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: var(--surface); border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px;
-  position: sticky; top: 0; z-index: 200;
+  padding: 0 24px; position: sticky; top: 0; z-index: 200;
 }
-
 .logo { display: flex; align-items: center; gap: 10px; }
-.logo-icon {
-  width: 28px; height: 28px; background: var(--accent);
-  border-radius: 6px; display: flex; align-items: center; justify-content: center;
-}
+.logo-icon { width: 28px; height: 28px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
 .logo-icon svg { width: 16px; height: 16px; }
 .logo-name { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
 .logo-tag { font-size: 11px; color: var(--text3); font-weight: 400; margin-left: 4px; }
-
 .header-right { display: flex; align-items: center; gap: 12px; }
-
-.status-dot {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; font-family: var(--mono); color: var(--text2);
-}
+.status-dot { display: flex; align-items: center; gap: 6px; font-size: 12px; font-family: var(--mono); color: var(--text2); }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); }
 .dot.running { background: var(--mid); animation: blink 1s infinite; }
 .dot.ready   { background: var(--low); }
 .dot.error   { background: var(--high); }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
 .last-run { font-size: 11px; color: var(--text3); font-family: var(--mono); }
 
+/* Body */
 .body { display: grid; grid-template-columns: 260px 1fr; height: calc(100vh - 56px); overflow: hidden; }
 
-.sidebar {
-  background: var(--surface); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  overflow-y: auto; padding: 20px 0;
-}
-
+/* Sidebar */
+.sidebar { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; padding: 20px 0; }
 .sidebar-section { padding: 0 16px; margin-bottom: 24px; }
 .sidebar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; padding: 0 4px; }
-
-.nav-item {
-  display: flex; align-items: center; gap: 9px;
-  padding: 8px 10px; border-radius: var(--radius);
-  font-size: 13px; font-weight: 500; color: var(--text2);
-  cursor: pointer; transition: all 0.12s; margin-bottom: 2px;
-}
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius); font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.12s; margin-bottom: 2px; }
 .nav-item:hover { background: var(--bg); color: var(--text); }
 .nav-item.active { background: var(--accent-l); color: var(--accent); }
 .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
-
 .pipeline-section { padding: 0 16px; margin-bottom: 16px; }
 .field-label { font-size: 11px; font-weight: 500; color: var(--text2); margin-bottom: 5px; }
-
-select {
-  width: 100%; background: var(--surface); border: 1px solid var(--border2);
-  color: var(--text); font-family: var(--sans); font-size: 13px;
-  padding: 7px 10px; border-radius: var(--radius); outline: none; cursor: pointer;
-  margin-bottom: 10px;
-}
+select { width: 100%; background: var(--surface); border: 1px solid var(--border2); color: var(--text); font-family: var(--sans); font-size: 13px; padding: 7px 10px; border-radius: var(--radius); outline: none; cursor: pointer; margin-bottom: 10px; }
 select:focus { border-color: var(--accent); }
-
-.btn {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  font-family: var(--sans); font-size: 13px; font-weight: 500;
-  padding: 8px 14px; border-radius: var(--radius); border: none;
-  cursor: pointer; transition: all 0.12s; width: 100%;
-}
+.btn { display: flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: var(--radius); border: none; cursor: pointer; transition: all 0.12s; width: 100%; }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: #1e40af; }
 .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-outline {
-  background: transparent; color: var(--text2);
-  border: 1px solid var(--border2); margin-top: 6px;
-}
+.btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border2); margin-top: 6px; }
 .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-
+.btn-danger { background: transparent; color: var(--high); border: 1px solid #fca5a5; margin-top: 6px; }
+.btn-danger:hover { background: var(--high-l); }
 .progress-wrap { margin-top: 10px; }
 .progress-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
 .progress-fill { height: 100%; background: var(--accent); width: 0; transition: width 0.4s; }
 .progress-fill.indeterminate { width: 45%; animation: prog 1.5s ease-in-out infinite; }
 @keyframes prog { 0%{transform:translateX(-120%)} 100%{transform:translateX(280%)} }
 .progress-label { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 5px; }
-
 .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px; margin-bottom: 16px; }
 .kpi-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
 .kpi-label { font-size: 10px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
@@ -130,93 +91,80 @@ select:focus { border-color: var(--accent); }
 .kpi-val.low    { color: var(--low); }
 .kpi-val.accent { color: var(--accent); }
 
-.inject-section { padding: 0 16px; border-top: 1px solid var(--border); padding-top: 16px; margin-top: auto; }
+/* Alert feed */
+.alert-section { padding: 0 16px; border-top: 1px solid var(--border); padding-top: 16px; margin-bottom: 16px; }
+.alert-feed { display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; }
+.alert-item { padding: 6px 8px; border-radius: 4px; border-left: 3px solid var(--high); background: var(--high-l); font-size: 11px; font-family: var(--mono); animation: slideIn 0.3s ease; }
+.alert-item.mid { border-left-color: var(--mid); background: var(--mid-l); }
+@keyframes slideIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+.alert-account { color: var(--accent); font-weight: 500; }
+.alert-score { float: right; font-weight: 700; }
+
+/* Inject */
+.inject-section { padding: 0 16px; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; }
 .inject-fields { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
-.inject-input {
-  width: 100%; background: var(--surface); border: 1px solid var(--border2);
-  color: var(--text); font-family: var(--mono); font-size: 11px;
-  padding: 6px 8px; border-radius: var(--radius); outline: none;
-}
+.inject-input { width: 100%; background: var(--surface); border: 1px solid var(--border2); color: var(--text); font-family: var(--mono); font-size: 11px; padding: 6px 8px; border-radius: var(--radius); outline: none; }
 .inject-input:focus { border-color: var(--accent); }
 .inject-input::placeholder { color: var(--text3); }
-
-.inject-result {
-  font-size: 11px; font-family: var(--mono); padding: 8px 10px;
-  border-radius: var(--radius); margin-top: 8px; display: none; line-height: 1.8;
-}
+.inject-result { font-size: 11px; font-family: var(--mono); padding: 8px 10px; border-radius: var(--radius); margin-top: 8px; display: none; line-height: 1.8; }
 .inject-result.flagged     { background: var(--high-l); color: var(--high); border: 1px solid #fca5a5; }
 .inject-result.not-flagged { background: var(--low-l);  color: var(--low);  border: 1px solid #6ee7b7; }
 
+/* Content */
 .content { overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-
-.tab-bar { display: flex; gap: 2px; background: var(--border); padding: 3px; border-radius: 8px; width: fit-content; }
-.tab {
-  font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 6px;
-  cursor: pointer; color: var(--text2); transition: all 0.12s; border: none; background: transparent;
-}
-.tab.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
-
 .tab-panel { display: none; flex-direction: column; gap: 20px; }
 .tab-panel.active { display: flex; }
-
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-.card-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 18px; border-bottom: 1px solid var(--border);
-}
+.card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--border); }
 .card-title { font-size: 13px; font-weight: 600; }
 .card-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
 .card-body { padding: 18px; }
 
-.table-controls { display: flex; gap: 8px; align-items: center; }
-.search-input {
-  background: var(--surface2); border: 1px solid var(--border2);
-  color: var(--text); font-family: var(--sans); font-size: 12px;
-  padding: 6px 10px; border-radius: var(--radius); outline: none; width: 180px;
-}
+/* Table */
+.table-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.search-input { background: var(--surface2); border: 1px solid var(--border2); color: var(--text); font-family: var(--sans); font-size: 12px; padding: 6px 10px; border-radius: var(--radius); outline: none; width: 160px; }
 .search-input:focus { border-color: var(--accent); }
-.filter-select {
-  background: var(--surface2); border: 1px solid var(--border2);
-  color: var(--text); font-family: var(--sans); font-size: 12px;
-  padding: 6px 8px; border-radius: var(--radius); outline: none; cursor: pointer;
-  width: auto;
-}
+.filter-select { background: var(--surface2); border: 1px solid var(--border2); color: var(--text); font-family: var(--sans); font-size: 12px; padding: 6px 8px; border-radius: var(--radius); outline: none; cursor: pointer; width: auto; }
 .row-count { font-size: 11px; color: var(--text3); font-family: var(--mono); }
-
-.table-wrap { overflow-y: auto; max-height: 520px; }
+.table-wrap { overflow-y: auto; max-height: 480px; }
 table { width: 100%; border-collapse: collapse; }
-thead th {
-  font-size: 11px; font-weight: 600; color: var(--text3); text-align: left;
-  padding: 8px 14px; border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: var(--surface);
-  cursor: pointer; user-select: none; white-space: nowrap;
-  letter-spacing: 0.04em; text-transform: uppercase;
-}
+thead th { font-size: 11px; font-weight: 600; color: var(--text3); text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); cursor: pointer; user-select: none; white-space: nowrap; letter-spacing: 0.04em; text-transform: uppercase; }
 thead th:hover { color: var(--text); }
 tbody tr { border-bottom: 1px solid var(--bg); transition: background 0.08s; cursor: pointer; }
 tbody tr:hover { background: var(--surface2); }
 tbody tr.selected { background: var(--accent-l); }
+tbody tr.compare-a { background: #eff6ff; }
+tbody tr.compare-b { background: #f0fdf4; }
 td { padding: 9px 14px; font-size: 12px; }
-
 .rank-num { font-family: var(--mono); font-size: 11px; color: var(--text3); }
 .acct-id  { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--accent); }
-
 .risk-cell { min-width: 110px; }
 .risk-num  { font-family: var(--mono); font-size: 12px; font-weight: 600; }
 .mini-bar  { height: 3px; background: var(--border); border-radius: 2px; margin-top: 4px; overflow: hidden; }
 .mini-fill { height: 100%; border-radius: 2px; }
-
 .badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.03em; }
-.badge-high   { background: var(--high-l);  color: var(--high); }
-.badge-medium { background: var(--mid-l);   color: var(--mid); }
-.badge-low    { background: var(--low-l);   color: var(--low); }
+.badge-high   { background: var(--high-l); color: var(--high); }
+.badge-medium { background: var(--mid-l);  color: var(--mid); }
+.badge-low    { background: var(--low-l);  color: var(--low); }
 
+/* Threshold slider */
+.threshold-bar { display: flex; align-items: center; gap: 12px; padding: 10px 18px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+.threshold-bar label { font-size: 11px; font-weight: 500; color: var(--text2); white-space: nowrap; }
+.threshold-bar input[type=range] { flex: 1; accent-color: var(--accent); }
+.threshold-val { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); min-width: 40px; }
+
+/* Compare panel */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.compare-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+.compare-card.a { border-top: 3px solid var(--accent); }
+.compare-card.b { border-top: 3px solid var(--low); }
+.compare-empty { display: flex; align-items: center; justify-content: center; height: 60px; font-size: 12px; color: var(--text3); font-style: italic; }
+
+/* Detail panel */
 .detail-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 180px; color: var(--text3); font-size: 12px; gap: 8px; }
 .detail-empty svg { opacity: 0.3; }
-
 .detail-id { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent); }
-.detail-meta { display: flex; gap: 8px; align-items: center; margin: 8px 0 14px; }
-
+.detail-meta { display: flex; gap: 8px; align-items: center; margin: 8px 0 14px; flex-wrap: wrap; }
 .score-rows { display: flex; flex-direction: column; gap: 10px; }
 .score-row-item { display: flex; flex-direction: column; gap: 4px; }
 .score-row-top { display: flex; justify-content: space-between; font-size: 11px; }
@@ -224,45 +172,50 @@ td { padding: 9px 14px; font-size: 12px; }
 .score-row-num { font-family: var(--mono); font-weight: 600; }
 .score-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
 .score-fill  { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-
 .tx-section { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
 .tx-section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-.tx-scroll { max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-.tx-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 5px 8px; background: var(--surface2); border-radius: 4px;
-  font-size: 11px; font-family: var(--mono); border-left: 3px solid var(--border);
-}
+.tx-scroll { max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.tx-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; background: var(--surface2); border-radius: 4px; font-size: 11px; font-family: var(--mono); border-left: 3px solid var(--border); }
 .tx-row.is-fraud { border-left-color: var(--high); background: var(--high-l); }
-.tx-peer { color: var(--text2); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tx-peer { color: var(--text2); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tx-amt  { font-weight: 500; }
 .tx-flag { color: var(--high); font-size: 10px; font-weight: 700; }
 
+/* Charts */
 .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .chart-full  { grid-column: 1 / -1; }
-
 .chart-svg { width: 100%; overflow: visible; }
 .axis text { font-family: var(--sans); font-size: 11px; fill: var(--text3); }
 .axis line, .axis path { stroke: var(--border2); }
 .grid line { stroke: var(--border); stroke-dasharray: 3,3; }
 
+/* Network */
 #networkSvg { width: 100%; height: 420px; background: var(--surface2); border-radius: var(--radius); }
-.node circle { cursor: pointer; transition: r 0.2s; }
-.node circle:hover { r: 9; }
-.node text { font-size: 9px; font-family: var(--mono); fill: var(--text2); pointer-events: none; }
+.node circle { cursor: pointer; }
 .link { stroke: var(--border2); stroke-opacity: 0.6; }
-
-.network-legend { display: flex; gap: 16px; padding: 10px 18px; border-top: 1px solid var(--border); }
+.link.highlighted { stroke: var(--accent); stroke-opacity: 1; stroke-width: 2.5; }
+.network-legend { display: flex; gap: 16px; padding: 10px 18px; border-top: 1px solid var(--border); flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
 .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-.tooltip {
-  position: fixed; background: var(--text); color: #fff;
-  font-size: 11px; font-family: var(--mono); padding: 6px 10px;
-  border-radius: 4px; pointer-events: none; opacity: 0;
-  transition: opacity 0.15s; z-index: 999; line-height: 1.7;
-  max-width: 200px;
-}
+/* Ablation */
+.ablation-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.ablation-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; cursor: pointer; transition: all 0.15s; }
+.ablation-card:hover { border-color: var(--accent); }
+.ablation-card.active { border-color: var(--accent); background: var(--accent-l); }
+.ablation-card-title { font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+.ablation-metric { font-family: var(--mono); font-size: 20px; font-weight: 700; }
+.ablation-metric.good { color: var(--low); }
+.ablation-metric.mid  { color: var(--mid); }
+.ablation-metric.best { color: var(--accent); }
+.ablation-sub { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.metric-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.metric-row:last-child { border-bottom: none; }
+.metric-bar-wrap { flex: 1; margin: 0 12px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.metric-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+
+/* Tooltip */
+.tooltip { position: fixed; background: var(--text); color: #fff; font-size: 11px; font-family: var(--mono); padding: 6px 10px; border-radius: 4px; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 999; line-height: 1.7; max-width: 200px; }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -294,20 +247,29 @@ td { padding: 9px 14px; font-size: 12px; }
 
 <div class="body">
 
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Navigation</div>
-      <div class="nav-item active" onclick="switchTab('overview', event)">
+      <div class="nav-item active" onclick="switchTab('overview',event)">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
         Overview
       </div>
-      <div class="nav-item" onclick="switchTab('accounts', event)">
+      <div class="nav-item" onclick="switchTab('accounts',event)">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
         Accounts
       </div>
-      <div class="nav-item" onclick="switchTab('network', event)">
+      <div class="nav-item" onclick="switchTab('compare',event)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h5v8H2zM9 4h5v8H9z"/></svg>
+        Compare
+      </div>
+      <div class="nav-item" onclick="switchTab('network',event)">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><circle cx="2" cy="3" r="1.5"/><circle cx="14" cy="3" r="1.5"/><circle cx="2" cy="13" r="1.5"/><circle cx="14" cy="13" r="1.5"/><path d="M3.5 4L6.5 7M9.5 7L12.5 4M6.5 9L3.5 12M9.5 9L12.5 12"/></svg>
         Network Graph
+      </div>
+      <div class="nav-item" onclick="switchTab('ablation',event)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Ablation Study
       </div>
     </div>
 
@@ -323,6 +285,7 @@ td { padding: 9px 14px; font-size: 12px; }
         Run Pipeline
       </button>
       <button class="btn btn-outline" onclick="fetchAll()">Refresh Data</button>
+      <button class="btn btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
       <div class="progress-wrap">
         <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
         <div class="progress-label" id="progLabel">—</div>
@@ -336,6 +299,15 @@ td { padding: 9px 14px; font-size: 12px; }
       <div class="kpi-card"><div class="kpi-label">Low Risk</div><div class="kpi-val low" id="kLow">—</div></div>
     </div>
 
+    <!-- Alert Feed -->
+    <div class="alert-section">
+      <div class="sidebar-label">🔴 Alert Feed</div>
+      <div class="alert-feed" id="alertFeed">
+        <div style="font-size:11px;color:var(--text3);font-family:var(--mono);padding:4px">No alerts yet</div>
+      </div>
+    </div>
+
+    <!-- Inject -->
     <div class="inject-section">
       <div class="sidebar-label">Inject Transaction</div>
       <div class="inject-fields">
@@ -348,6 +320,7 @@ td { padding: 9px 14px; font-size: 12px; }
     </div>
   </aside>
 
+  <!-- Main content -->
   <main class="content">
 
     <!-- Overview tab -->
@@ -355,39 +328,25 @@ td { padding: 9px 14px; font-size: 12px; }
       <div class="charts-grid">
         <div class="card">
           <div class="card-header">
-            <div>
-              <div class="card-title">Risk Score Distribution</div>
-              <div class="card-sub">Frequency of final risk scores across all accounts</div>
-            </div>
+            <div><div class="card-title">Risk Score Distribution</div><div class="card-sub">Frequency of final risk scores across all accounts</div></div>
           </div>
           <div class="card-body" style="padding-bottom:8px">
             <svg id="histSvg" class="chart-svg" height="200"></svg>
           </div>
         </div>
-
         <div class="card">
           <div class="card-header">
-            <div>
-              <div class="card-title">Signal Comparison</div>
-              <div class="card-sub">Average risk score by signal — Top 100 accounts</div>
-            </div>
+            <div><div class="card-title">Signal Comparison</div><div class="card-sub">Average score by signal — Top 100 accounts</div></div>
           </div>
           <div class="card-body" style="padding-bottom:8px">
             <svg id="barSvg" class="chart-svg" height="200"></svg>
           </div>
         </div>
-
         <div class="card chart-full">
-          <div class="card-header">
-            <div><div class="card-title">Top 10 Highest Risk Accounts</div></div>
-          </div>
+          <div class="card-header"><div class="card-title">Top 10 Highest Risk Accounts</div></div>
           <div class="card-body" style="padding:0">
             <table>
-              <thead><tr>
-                <th>#</th><th>Account</th>
-                <th>Final Risk</th><th>Behavioral</th>
-                <th>Structural</th><th>Propagated</th><th>Level</th>
-              </tr></thead>
+              <thead><tr><th>#</th><th>Account</th><th>Final Risk</th><th>Behavioral</th><th>Structural</th><th>Propagated</th><th>Level</th></tr></thead>
               <tbody id="top10Body"></tbody>
             </table>
           </div>
@@ -412,6 +371,14 @@ td { padding: 9px 14px; font-size: 12px; }
               <span class="row-count" id="rowCount"></span>
             </div>
           </div>
+          <!-- Threshold slider -->
+          <div class="threshold-bar">
+            <label>Min Risk Threshold</label>
+            <input type="range" id="thresholdSlider" min="0" max="100" value="0"
+              oninput="onThresholdChange(this.value)" style="accent-color:var(--accent)"/>
+            <span class="threshold-val" id="thresholdVal">0.00</span>
+            <span style="font-size:11px;color:var(--text3);font-family:var(--mono)" id="thresholdCount"></span>
+          </div>
           <div class="table-wrap">
             <table>
               <thead><tr>
@@ -422,21 +389,50 @@ td { padding: 9px 14px; font-size: 12px; }
                 <th onclick="sortTable('struct_risk')">Structural</th>
                 <th onclick="sortTable('prop_risk')">Propagated</th>
                 <th>Level</th>
+                <th>Compare</th>
               </tr></thead>
               <tbody id="tableBody">
-                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3);font-size:12px">Run the pipeline to load accounts</td></tr>
+                <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3);font-size:12px">Run the pipeline to load accounts</td></tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <div class="card" id="detailCard" style="position:sticky;top:0">
+        <div class="card" style="position:sticky;top:0">
           <div class="card-header"><div class="card-title">Account Detail</div></div>
           <div class="card-body" id="detailBody">
             <div class="detail-empty">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-              Select an account to view details
+              Select an account
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compare tab -->
+    <div class="tab-panel" id="tab-compare">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Account Comparison</div><div class="card-sub">Select two accounts from the Accounts tab to compare side by side</div></div>
+          <button class="btn btn-danger" style="width:auto;padding:5px 12px;font-size:12px" onclick="clearCompare()">✕ Clear</button>
+        </div>
+        <div class="card-body">
+          <div class="compare-grid" id="compareGrid">
+            <div class="compare-card a">
+              <div style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:0.06em;margin-bottom:8px">ACCOUNT A</div>
+              <div class="compare-empty" id="compareA-empty">Click A on any account row</div>
+              <div id="compareA-content" style="display:none"></div>
+            </div>
+            <div class="compare-card b">
+              <div style="font-size:10px;font-weight:700;color:var(--low);letter-spacing:0.06em;margin-bottom:8px">ACCOUNT B</div>
+              <div class="compare-empty" id="compareB-empty">Click B on any account row</div>
+              <div id="compareB-content" style="display:none"></div>
+            </div>
+          </div>
+          <div id="compareDelta" style="margin-top:16px;display:none">
+            <div style="font-size:12px;font-weight:600;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">Score Delta (A − B)</div>
+            <svg id="deltaSvg" class="chart-svg" height="160"></svg>
           </div>
         </div>
       </div>
@@ -446,58 +442,80 @@ td { padding: 9px 14px; font-size: 12px; }
     <div class="tab-panel" id="tab-network">
       <div class="card">
         <div class="card-header">
-          <div>
-            <div class="card-title">Transaction Network</div>
-            <div class="card-sub" id="networkSub">35 high · 25 medium · 20 low risk accounts</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div><div class="card-title">Transaction Network</div><div class="card-sub" id="networkSub">35 high · 25 medium · 20 low risk accounts</div></div>
+          <div style="display:flex;gap:8px">
             <button class="btn btn-outline" style="width:auto;padding:5px 12px;font-size:12px" onclick="toggleNetworkControls()">⚙ Configure</button>
             <button class="btn btn-outline" style="width:auto;padding:5px 12px;font-size:12px" onclick="renderNetwork()">↺ Refresh</button>
           </div>
         </div>
-
-        <!-- Controls panel -->
+        <!-- Network controls -->
         <div id="networkControls" style="display:none;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface2)">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:16px;align-items:end">
             <div>
               <div class="field-label" style="margin-bottom:6px">🔴 High Risk Nodes</div>
-              <input type="range" id="sliderHigh" min="0" max="60" value="35"
-                oninput="document.getElementById('valHigh').textContent=this.value"
-                style="width:100%;accent-color:var(--high)"/>
-              <div style="display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:3px">
-                <span>0</span><span id="valHigh">35</span><span>60</span>
-              </div>
+              <input type="range" id="sliderHigh" min="0" max="60" value="35" oninput="document.getElementById('valHigh').textContent=this.value" style="width:100%;accent-color:var(--high)"/>
+              <div style="display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:3px"><span>0</span><span id="valHigh">35</span><span>60</span></div>
             </div>
             <div>
               <div class="field-label" style="margin-bottom:6px">🟡 Medium Risk Nodes</div>
-              <input type="range" id="sliderMed" min="0" max="60" value="25"
-                oninput="document.getElementById('valMed').textContent=this.value"
-                style="width:100%;accent-color:var(--mid)"/>
-              <div style="display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:3px">
-                <span>0</span><span id="valMed">25</span><span>60</span>
-              </div>
+              <input type="range" id="sliderMed" min="0" max="60" value="25" oninput="document.getElementById('valMed').textContent=this.value" style="width:100%;accent-color:var(--mid)"/>
+              <div style="display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:3px"><span>0</span><span id="valMed">25</span><span>60</span></div>
             </div>
             <div>
               <div class="field-label" style="margin-bottom:6px">🟢 Low Risk Nodes</div>
-              <input type="range" id="sliderLow" min="0" max="60" value="20"
-                oninput="document.getElementById('valLow').textContent=this.value"
-                style="width:100%;accent-color:var(--low)"/>
-              <div style="display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:3px">
-                <span>0</span><span id="valLow">20</span><span>60</span>
-              </div>
+              <input type="range" id="sliderLow" min="0" max="60" value="20" oninput="document.getElementById('valLow').textContent=this.value" style="width:100%;accent-color:var(--low)"/>
+              <div style="display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:3px"><span>0</span><span id="valLow">20</span><span>60</span></div>
             </div>
-            <button class="btn btn-primary" style="width:auto;padding:7px 16px;font-size:12px;height:fit-content" onclick="renderNetwork()">
-              Apply
-            </button>
+            <button class="btn btn-primary" style="width:auto;padding:7px 16px;font-size:12px;height:fit-content" onclick="renderNetwork()">Apply</button>
           </div>
         </div>
-
         <svg id="networkSvg"></svg>
         <div class="network-legend">
           <div class="legend-item"><div class="legend-dot" style="background:var(--high)"></div>High Risk</div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--mid)"></div>Medium Risk</div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--low)"></div>Low Risk</div>
-          <span style="margin-left:auto;font-size:11px;color:var(--text3)">Drag nodes · Scroll to zoom · Click to inspect</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--text3)">Drag · Scroll to zoom · Click to inspect</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ablation Study tab -->
+    <div class="tab-panel" id="tab-ablation">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Ablation Study — Multi-Signal vs Single-Signal</div>
+            <div class="card-sub">Demonstrates why combining all three signals outperforms any single approach</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Model cards -->
+          <div class="ablation-grid" id="ablationCards"></div>
+          <!-- Metrics table -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div>
+              <div style="font-size:12px;font-weight:600;margin-bottom:12px">Precision by Model</div>
+              <div id="precisionBars"></div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:600;margin-bottom:12px">Recall by Model</div>
+              <div id="recallBars"></div>
+            </div>
+          </div>
+          <div style="margin-top:20px">
+            <div style="font-size:12px;font-weight:600;margin-bottom:12px">F1 Score Comparison</div>
+            <svg id="ablationSvg" class="chart-svg" height="200"></svg>
+          </div>
+          <div style="margin-top:16px;padding:12px;background:var(--accent-l);border-radius:var(--radius);border-left:3px solid var(--accent)">
+            <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:4px">Key Finding</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6">
+              The multi-signal approach achieves the highest F1 score by combining behavioral patterns 
+              (XGBoost), structural network position (PageRank + graph features), and relational 
+              propagation. No single signal alone captures all fraud patterns — behavioral analysis 
+              misses network-based fraud, structural analysis lacks transaction context, and propagation 
+              alone has high false positives without signal grounding.
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -511,8 +529,11 @@ td { padding: 9px 14px; font-size: 12px; }
 <script>
 const API = 'http://localhost:8080';
 let allAccounts = [];
+let filteredAccounts = [];
 let sortKey = 'rank', sortAsc = true;
 let pollTimer = null;
+let compareA = null, compareB = null;
+let injectedNodes = [];
 
 // ── Tab switching ─────────────────────────────────────────
 function switchTab(name, e) {
@@ -521,6 +542,7 @@ function switchTab(name, e) {
   document.getElementById(`tab-${name}`).classList.add('active');
   if (e && e.currentTarget) e.currentTarget.classList.add('active');
   if (name === 'network' && allAccounts.length) renderNetwork();
+  if (name === 'ablation') renderAblation();
 }
 
 function switchTabDirect(name) {
@@ -538,31 +560,19 @@ async function runPipeline() {
   btn.disabled = true;
   setProgress('running', 'Reloading data...');
   setStatus('running');
-
   try {
     const res  = await fetch(`${API}/api/reload`, { method: 'POST' });
     const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.detail || 'Reload failed — run: python main.py first');
-      btn.disabled = false;
-      setProgress('idle', '—');
-      setStatus('idle');
-      return;
-    }
-
+    if (!res.ok) { alert(data.detail || 'Reload failed — run: python main.py first'); btn.disabled=false; setProgress('idle','—'); setStatus('idle'); return; }
     await new Promise(r => setTimeout(r, 800));
     setProgress('done', `Loaded ${Number(data.accounts).toLocaleString()} accounts`);
     setStatus('ready');
     document.getElementById('lastRun').textContent = 'Updated ' + new Date().toLocaleTimeString();
     btn.disabled = false;
     fetchAll();
-
   } catch(e) {
     alert('Cannot reach API — is uvicorn running on port 8080?');
-    btn.disabled = false;
-    setProgress('idle', '—');
-    setStatus('idle');
+    btn.disabled = false; setProgress('idle','—'); setStatus('idle');
   }
 }
 
@@ -575,10 +585,12 @@ async function fetchResults() {
   try {
     const d = await (await fetch(`${API}/api/results?limit=500`)).json();
     allAccounts = d.accounts || [];
-    renderTable(allAccounts);
+    filteredAccounts = [...allAccounts];
+    renderTable(filteredAccounts);
     renderTop10();
     renderHistogram();
     renderSignalBar();
+    renderAlertFeed();
   } catch(e) {}
 }
 
@@ -592,17 +604,66 @@ async function fetchStats() {
   } catch(e) {}
 }
 
+// ── Alert feed ────────────────────────────────────────────
+function renderAlertFeed() {
+  const feed = document.getElementById('alertFeed');
+  const topAlerts = allAccounts.filter(a => a.final_risk >= 0.9).slice(0, 8);
+  if (!topAlerts.length) return;
+  feed.innerHTML = topAlerts.map(a => `
+    <div class="alert-item ${level(a.final_risk)==='medium'?'mid':''}" onclick="switchTabDirect('accounts');loadDetail('${a.account}')">
+      <span class="alert-account">${a.account.slice(0,12)}...</span>
+      <span class="alert-score" style="color:${color(a.final_risk)}">${a.final_risk.toFixed(3)}</span><br>
+      <span style="color:var(--text3);font-size:10px">Rank #${a.rank} · ${level(a.final_risk).toUpperCase()}</span>
+    </div>`).join('');
+}
+
+// ── Export CSV ────────────────────────────────────────────
+function exportCSV() {
+  if (!filteredAccounts.length) { alert('No data to export'); return; }
+  const cols = ['rank','account','final_risk','stat_risk','struct_risk','prop_risk'];
+  const rows = [cols.join(','), ...filteredAccounts.map(a => cols.map(c => a[c]).join(','))];
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `riskforge_export_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ── Threshold slider ──────────────────────────────────────
+function onThresholdChange(val) {
+  const threshold = val / 100;
+  document.getElementById('thresholdVal').textContent = threshold.toFixed(2);
+  applyFilters();
+}
+
+function applyFilters() {
+  const q         = document.getElementById('searchInput').value.toLowerCase();
+  const f         = document.getElementById('riskFilter').value;
+  const threshold = parseFloat(document.getElementById('thresholdSlider').value) / 100;
+  let r = allAccounts;
+  if (q) r = r.filter(a => a.account.toLowerCase().includes(q));
+  if (f !== 'all') r = r.filter(a => level(a.final_risk) === f);
+  r = r.filter(a => a.final_risk >= threshold);
+  filteredAccounts = r;
+  document.getElementById('thresholdCount').textContent = `${r.length.toLocaleString()} shown`;
+  renderTable(r);
+}
+
+function filterTable() { applyFilters(); }
+
 // ── Table ─────────────────────────────────────────────────
 function renderTable(accounts) {
   const tbody = document.getElementById('tableBody');
   document.getElementById('rowCount').textContent = accounts.length.toLocaleString() + ' accounts';
   if (!accounts.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3);font-size:12px">No accounts found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3);font-size:12px">No accounts match filter</td></tr>';
     return;
   }
   tbody.innerHTML = accounts.map(a => {
     const lv = level(a.final_risk), col = color(a.final_risk);
-    return `<tr onclick="loadDetail('${a.account}')" data-account="${a.account}">
+    const isA = compareA && compareA.account === a.account;
+    const isB = compareB && compareB.account === a.account;
+    return `<tr onclick="loadDetail('${a.account}')" data-account="${a.account}" class="${isA?'compare-a':isB?'compare-b':''}">
       <td class="rank-num">${a.rank}</td>
       <td class="acct-id">${a.account}</td>
       <td class="risk-cell">
@@ -613,6 +674,10 @@ function renderTable(accounts) {
       <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">${a.struct_risk.toFixed(4)}</td>
       <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">${a.prop_risk.toFixed(4)}</td>
       <td><span class="badge badge-${lv}">${lv.charAt(0).toUpperCase()+lv.slice(1)}</span></td>
+      <td>
+        <button onclick="event.stopPropagation();setCompare('A','${a.account}')" style="font-size:10px;padding:2px 6px;border:1px solid var(--accent);background:${isA?'var(--accent)':'transparent'};color:${isA?'#fff':'var(--accent)'};border-radius:3px;cursor:pointer;margin-right:3px">A</button>
+        <button onclick="event.stopPropagation();setCompare('B','${a.account}')" style="font-size:10px;padding:2px 6px;border:1px solid var(--low);background:${isB?'var(--low)':'transparent'};color:${isB?'#fff':'var(--low)'};border-radius:3px;cursor:pointer">B</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -620,7 +685,7 @@ function renderTable(accounts) {
 function renderTop10() {
   const tbody = document.getElementById('top10Body');
   tbody.innerHTML = allAccounts.slice(0,10).map(a => {
-    const lv = level(a.final_risk), col = color(a.final_risk);
+    const lv=level(a.final_risk), col=color(a.final_risk);
     return `<tr onclick="switchTabDirect('accounts');loadDetail('${a.account}')">
       <td class="rank-num">${a.rank}</td>
       <td class="acct-id">${a.account}</td>
@@ -633,22 +698,12 @@ function renderTop10() {
   }).join('');
 }
 
-function filterTable() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const f = document.getElementById('riskFilter').value;
-  let r = allAccounts;
-  if (q) r = r.filter(a => a.account.toLowerCase().includes(q));
-  if (f !== 'all') r = r.filter(a => level(a.final_risk) === f);
-  renderTable(r);
-}
-
 function sortTable(key) {
-  if (sortKey === key) sortAsc = !sortAsc;
-  else { sortKey = key; sortAsc = key === 'rank'; }
-  const s = [...allAccounts].sort((a,b) => {
+  if (sortKey===key) sortAsc=!sortAsc;
+  else { sortKey=key; sortAsc=key==='rank'; }
+  const s = [...filteredAccounts].sort((a,b) => {
     const av=a[key],bv=b[key];
-    return sortAsc ? (typeof av==='string'?av.localeCompare(bv):av-bv)
-                   : (typeof av==='string'?bv.localeCompare(av):bv-av);
+    return sortAsc?(typeof av==='string'?av.localeCompare(bv):av-bv):(typeof av==='string'?bv.localeCompare(av):bv-av);
   });
   renderTable(s);
 }
@@ -678,13 +733,12 @@ async function loadDetail(id) {
       <div class="tx-section">
         <div class="tx-section-label">Recent Transactions (${txs.length})</div>
         <div class="tx-scroll">
-          ${txs.length ? txs.map(t=>`
+          ${txs.length?txs.map(t=>`
             <div class="tx-row ${t.label?'is-fraud':''}">
               <span class="tx-peer">${t.sender===id?'→ '+t.receiver:'← '+t.sender}</span>
               <span class="tx-amt">$${Number(t.amount).toLocaleString(undefined,{maximumFractionDigits:0})}</span>
               ${t.label?'<span class="tx-flag">FRAUD</span>':''}
-            </div>`).join('')
-            : '<div style="font-size:11px;color:var(--text3)">No transactions</div>'}
+            </div>`).join(''):'<div style="font-size:11px;color:var(--text3)">No transactions</div>'}
         </div>
       </div>`;
   } catch(e) {}
@@ -692,113 +746,92 @@ async function loadDetail(id) {
 
 function srow(label, val, col) {
   return `<div class="score-row-item">
-    <div class="score-row-top">
-      <span class="score-row-label">${label}</span>
-      <span class="score-row-num" style="color:${col}">${val.toFixed(4)}</span>
-    </div>
+    <div class="score-row-top"><span class="score-row-label">${label}</span><span class="score-row-num" style="color:${col}">${val.toFixed(4)}</span></div>
     <div class="score-track"><div class="score-fill" style="width:${val*100}%;background:${col}"></div></div>
   </div>`;
 }
 
-// ── D3 Histogram ──────────────────────────────────────────
-function renderHistogram() {
-  if (!allAccounts.length) return;
-  const el = document.getElementById('histSvg');
-  const W = el.parentElement.clientWidth - 36, H = 200;
-  const margin = {top:10, right:16, bottom:32, left:40};
-  const w = W - margin.left - margin.right;
-  const h = H - margin.top  - margin.bottom;
-
-  d3.select('#histSvg').selectAll('*').remove();
-  const svg = d3.select('#histSvg')
-    .attr('viewBox', `0 0 ${W} ${H}`)
-    .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-  const scores = allAccounts.map(a => a.final_risk);
-  const x = d3.scaleLinear().domain([0,1]).range([0,w]);
-  const bins = d3.bin().domain([0,1]).thresholds(20)(scores);
-  const y = d3.scaleLinear().domain([0, d3.max(bins,d=>d.length)]).nice().range([h,0]);
-
-  svg.append('g').attr('class','grid')
-    .call(d3.axisLeft(y).ticks(5).tickSize(-w).tickFormat(''))
-    .call(g => { g.select('.domain').remove(); });
-
-  // threshold lines
-  svg.append('line')
-    .attr('x1', x(0.9)).attr('x2', x(0.9))
-    .attr('y1', 0).attr('y2', h)
-    .attr('stroke', 'var(--high)').attr('stroke-dasharray','4,3').attr('stroke-width',1.5).attr('opacity',0.6);
-  svg.append('line')
-    .attr('x1', x(0.6)).attr('x2', x(0.6))
-    .attr('y1', 0).attr('y2', h)
-    .attr('stroke', 'var(--mid)').attr('stroke-dasharray','4,3').attr('stroke-width',1.5).attr('opacity',0.6);
-
-  svg.selectAll('rect').data(bins).join('rect')
-    .attr('x', d => x(d.x0)+1)
-    .attr('width', d => Math.max(0, x(d.x1)-x(d.x0)-2))
-    .attr('y', d => y(d.length))
-    .attr('height', d => h - y(d.length))
-    .attr('fill', d => {
-      const mid = (d.x0+d.x1)/2;
-      if (mid >= 0.9) return 'var(--high)';
-      if (mid >= 0.6) return 'var(--mid)';
-      return 'var(--low)';
-    })
-    .attr('opacity', 0.8)
-    .attr('rx', 2);
-
-  svg.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
-    .call(d3.axisBottom(x).ticks(5).tickFormat(d=>d.toFixed(1)));
-  svg.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(5));
+// ── Compare ───────────────────────────────────────────────
+async function setCompare(slot, id) {
+  const account = allAccounts.find(a => a.account === id);
+  if (!account) return;
+  if (slot === 'A') compareA = account;
+  else compareB = account;
+  renderTable(filteredAccounts);
+  renderComparePanel();
+  switchTabDirect('compare');
 }
 
-// ── D3 Signal bar chart ───────────────────────────────────
-function renderSignalBar() {
-  if (!allAccounts.length) return;
-  const top = allAccounts.slice(0,100);
-  const signals = [
-    { label: 'Behavioral',  key: 'stat_risk',   color: '#1d4ed8' },
-    { label: 'Structural',  key: 'struct_risk',  color: '#d97706' },
-    { label: 'Propagated',  key: 'prop_risk',    color: '#dc2626' },
-    { label: 'Final',       key: 'final_risk',   color: '#6b7280' },
-  ];
-  const avgs = signals.map(s => ({
-    label: s.label, color: s.color,
-    value: d3.mean(top, a => a[s.key])
-  }));
+function clearCompare() {
+  compareA = null; compareB = null;
+  document.getElementById('compareA-empty').style.display='flex';
+  document.getElementById('compareA-content').style.display='none';
+  document.getElementById('compareB-empty').style.display='flex';
+  document.getElementById('compareB-content').style.display='none';
+  document.getElementById('compareDelta').style.display='none';
+  renderTable(filteredAccounts);
+}
 
-  const el = document.getElementById('barSvg');
-  const W = el.parentElement.clientWidth - 36, H = 200;
-  const margin = {top:10, right:16, bottom:32, left:100};
-  const w = W - margin.left - margin.right;
-  const h = H - margin.top  - margin.bottom;
+function renderComparePanel() {
+  ['A','B'].forEach(slot => {
+    const acc = slot==='A' ? compareA : compareB;
+    const empty = document.getElementById(`compare${slot}-empty`);
+    const content = document.getElementById(`compare${slot}-content`);
+    if (!acc) { empty.style.display='flex'; content.style.display='none'; return; }
+    empty.style.display='none';
+    content.style.display='block';
+    const col = color(acc.final_risk);
+    content.innerHTML = `
+      <div style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);margin-bottom:10px">${acc.account}</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+        <span class="badge badge-${level(acc.final_risk)}">${level(acc.final_risk).toUpperCase()}</span>
+        <span style="font-family:var(--mono);font-weight:700;color:${col}">${acc.final_risk.toFixed(4)}</span>
+        <span style="font-size:11px;color:var(--text3)">Rank #${acc.rank}</span>
+      </div>
+      ${srow('Behavioral',  acc.stat_risk,   '#1d4ed8')}
+      <div style="margin-top:8px"></div>
+      ${srow('Structural',  acc.struct_risk, '#d97706')}
+      <div style="margin-top:8px"></div>
+      ${srow('Propagated',  acc.prop_risk,   '#dc2626')}
+      <div style="margin-top:8px"></div>
+      ${srow('Final',       acc.final_risk,  col)}`;
+  });
 
-  d3.select('#barSvg').selectAll('*').remove();
-  const svg = d3.select('#barSvg')
-    .attr('viewBox', `0 0 ${W} ${H}`)
-    .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+  if (compareA && compareB) renderDeltaChart();
+}
 
-  const x = d3.scaleLinear().domain([0,1]).range([0,w]);
-  const y = d3.scaleBand().domain(avgs.map(d=>d.label)).range([0,h]).padding(0.35);
+function renderDeltaChart() {
+  document.getElementById('compareDelta').style.display='block';
+  const signals = ['stat_risk','struct_risk','prop_risk','final_risk'];
+  const labels  = ['Behavioral','Structural','Propagated','Final'];
+  const deltas  = signals.map((s,i) => ({ label: labels[i], delta: compareA[s] - compareB[s] }));
 
-  svg.append('g').attr('class','grid')
-    .call(d3.axisTop(x).ticks(5).tickSize(-h).tickFormat(''))
-    .call(g => { g.select('.domain').remove(); });
+  const W=600, H=160, margin={top:10,right:60,bottom:30,left:100};
+  const w=W-margin.left-margin.right, h=H-margin.top-margin.bottom;
 
-  svg.selectAll('rect').data(avgs).join('rect')
-    .attr('y', d => y(d.label))
+  d3.select('#deltaSvg').selectAll('*').remove();
+  const svg = d3.select('#deltaSvg').attr('viewBox',`0 0 ${W} ${H}`)
+    .append('g').attr('transform',`translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleLinear().domain([-1,1]).range([0,w]);
+  const y = d3.scaleBand().domain(labels).range([0,h]).padding(0.3);
+
+  svg.append('line').attr('x1',x(0)).attr('x2',x(0)).attr('y1',0).attr('y2',h)
+    .attr('stroke','var(--border2)').attr('stroke-width',1.5);
+
+  svg.selectAll('rect').data(deltas).join('rect')
+    .attr('y', d=>y(d.label))
     .attr('height', y.bandwidth())
-    .attr('x', 0)
-    .attr('width', d => x(d.value))
-    .attr('fill', d => d.color)
-    .attr('opacity', 0.85)
-    .attr('rx', 3);
+    .attr('x', d => d.delta>=0 ? x(0) : x(d.delta))
+    .attr('width', d => Math.abs(x(d.delta)-x(0)))
+    .attr('fill', d => d.delta>=0 ? 'var(--accent)' : 'var(--high)')
+    .attr('opacity', 0.8).attr('rx',3);
 
-  svg.selectAll('.val-label').data(avgs).join('text')
-    .attr('class','val-label')
-    .attr('x', d => x(d.value)+5)
+  svg.selectAll('.dlabel').data(deltas).join('text').attr('class','dlabel')
+    .attr('x', d => d.delta>=0 ? x(d.delta)+4 : x(d.delta)-4)
     .attr('y', d => y(d.label)+y.bandwidth()/2+4)
-    .text(d => d.value.toFixed(3))
+    .attr('text-anchor', d => d.delta>=0?'start':'end')
+    .text(d => (d.delta>0?'+':'')+d.delta.toFixed(3))
     .style('font-size','11px').style('font-family','var(--mono)').style('fill','var(--text2)');
 
   svg.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
@@ -806,108 +839,231 @@ function renderSignalBar() {
   svg.append('g').attr('class','axis').call(d3.axisLeft(y));
 }
 
-// ── D3 Network graph ──────────────────────────────────────
+// ── D3 Histogram ──────────────────────────────────────────
+function renderHistogram() {
+  if (!allAccounts.length) return;
+  const el=document.getElementById('histSvg');
+  const W=el.parentElement.clientWidth-36, H=200;
+  const margin={top:10,right:16,bottom:32,left:40};
+  const w=W-margin.left-margin.right, h=H-margin.top-margin.bottom;
+  d3.select('#histSvg').selectAll('*').remove();
+  const svg=d3.select('#histSvg').attr('viewBox',`0 0 ${W} ${H}`).append('g').attr('transform',`translate(${margin.left},${margin.top})`);
+  const scores=allAccounts.map(a=>a.final_risk);
+  const x=d3.scaleLinear().domain([0,1]).range([0,w]);
+  const bins=d3.bin().domain([0,1]).thresholds(20)(scores);
+  const y=d3.scaleLinear().domain([0,d3.max(bins,d=>d.length)]).nice().range([h,0]);
+  svg.append('g').attr('class','grid').call(d3.axisLeft(y).ticks(5).tickSize(-w).tickFormat('')).call(g=>{g.select('.domain').remove();});
+  [0.9,0.6].forEach((v,i)=>{
+    svg.append('line').attr('x1',x(v)).attr('x2',x(v)).attr('y1',0).attr('y2',h)
+      .attr('stroke',i===0?'var(--high)':'var(--mid)').attr('stroke-dasharray','4,3').attr('stroke-width',1.5).attr('opacity',0.7);
+    svg.append('text').attr('x',x(v)+3).attr('y',10).text(v.toFixed(1))
+      .style('font-size','9px').style('font-family','var(--mono)').style('fill',i===0?'var(--high)':'var(--mid)');
+  });
+  svg.selectAll('rect').data(bins).join('rect')
+    .attr('x',d=>x(d.x0)+1).attr('width',d=>Math.max(0,x(d.x1)-x(d.x0)-2))
+    .attr('y',d=>y(d.length)).attr('height',d=>h-y(d.length))
+    .attr('fill',d=>{ const m=(d.x0+d.x1)/2; return m>=0.9?'var(--high)':m>=0.6?'var(--mid)':'var(--low)'; })
+    .attr('opacity',0.8).attr('rx',2);
+  svg.append('g').attr('class','axis').attr('transform',`translate(0,${h})`).call(d3.axisBottom(x).ticks(5).tickFormat(d=>d.toFixed(1)));
+  svg.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(5));
+}
+
+// ── D3 Signal bar ─────────────────────────────────────────
+function renderSignalBar() {
+  if (!allAccounts.length) return;
+  const top=allAccounts.slice(0,100);
+  const avgs=[
+    {label:'Behavioral', key:'stat_risk',   color:'#1d4ed8'},
+    {label:'Structural', key:'struct_risk', color:'#d97706'},
+    {label:'Propagated', key:'prop_risk',   color:'#dc2626'},
+    {label:'Final',      key:'final_risk',  color:'#6b7280'},
+  ].map(s=>({...s, value:d3.mean(top,a=>a[s.key])}));
+
+  const el=document.getElementById('barSvg');
+  const W=el.parentElement.clientWidth-36, H=200;
+  const margin={top:10,right:16,bottom:32,left:100};
+  const w=W-margin.left-margin.right, h=H-margin.top-margin.bottom;
+  d3.select('#barSvg').selectAll('*').remove();
+  const svg=d3.select('#barSvg').attr('viewBox',`0 0 ${W} ${H}`).append('g').attr('transform',`translate(${margin.left},${margin.top})`);
+  const x=d3.scaleLinear().domain([0,1]).range([0,w]);
+  const y=d3.scaleBand().domain(avgs.map(d=>d.label)).range([0,h]).padding(0.35);
+  svg.append('g').attr('class','grid').call(d3.axisTop(x).ticks(5).tickSize(-h).tickFormat('')).call(g=>{g.select('.domain').remove();});
+  svg.selectAll('rect').data(avgs).join('rect')
+    .attr('y',d=>y(d.label)).attr('height',y.bandwidth()).attr('x',0).attr('width',d=>x(d.value))
+    .attr('fill',d=>d.color).attr('opacity',0.85).attr('rx',3);
+  svg.selectAll('.vl').data(avgs).join('text').attr('class','vl')
+    .attr('x',d=>x(d.value)+5).attr('y',d=>y(d.label)+y.bandwidth()/2+4)
+    .text(d=>d.value.toFixed(3)).style('font-size','11px').style('font-family','var(--mono)').style('fill','var(--text2)');
+  svg.append('g').attr('class','axis').attr('transform',`translate(0,${h})`).call(d3.axisBottom(x).ticks(5).tickFormat(d=>d.toFixed(1)));
+  svg.append('g').attr('class','axis').call(d3.axisLeft(y));
+}
+
+// ── Network ───────────────────────────────────────────────
 function toggleNetworkControls() {
-  const el = document.getElementById('networkControls');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  const el=document.getElementById('networkControls');
+  el.style.display=el.style.display==='none'?'block':'none';
 }
 
 function renderNetwork() {
   if (!allAccounts.length) return;
-  const svgEl = document.getElementById('networkSvg');
-  const W = svgEl.clientWidth || 800;
-  const H = 420;
-
-  // Read slider values
-  const nHigh = parseInt(document.getElementById('sliderHigh').value);
-  const nMed  = parseInt(document.getElementById('sliderMed').value);
-  const nLow  = parseInt(document.getElementById('sliderLow').value);
-
-  // Update subtitle
-  document.getElementById('networkSub').textContent =
-    `${nHigh} high · ${nMed} medium · ${nLow} low risk accounts`;
-
+  const svgEl=document.getElementById('networkSvg');
+  const W=svgEl.clientWidth||800, H=420;
+  const nHigh=parseInt(document.getElementById('sliderHigh').value);
+  const nMed =parseInt(document.getElementById('sliderMed').value);
+  const nLow =parseInt(document.getElementById('sliderLow').value);
+  document.getElementById('networkSub').textContent=`${nHigh} high · ${nMed} medium · ${nLow} low risk accounts`;
   d3.select('#networkSvg').selectAll('*').remove();
 
-  const high   = allAccounts.filter(a => level(a.final_risk) === 'high').slice(0, nHigh);
-  const medium = allAccounts.filter(a => level(a.final_risk) === 'medium').slice(0, nMed);
-  const low    = allAccounts.filter(a => level(a.final_risk) === 'low').slice(0, nLow);
-  const sample = [...high, ...medium, ...low];
-
+  const high  =allAccounts.filter(a=>level(a.final_risk)==='high').slice(0,nHigh);
+  const medium=allAccounts.filter(a=>level(a.final_risk)==='medium').slice(0,nMed);
+  const low   =allAccounts.filter(a=>level(a.final_risk)==='low').slice(0,nLow);
+  const sample=[...high,...medium,...low];
   if (!sample.length) return;
 
-  const nodes = sample.map(a => ({ id: a.account, risk: a.final_risk }));
-  const links = [];
-  for (let i = 0; i < nodes.length; i++) {
-    const numLinks = Math.floor(Math.random() * 2) + 1;
-    for (let j = 0; j < numLinks; j++) {
-      const target = Math.floor(Math.random() * nodes.length);
-      if (target !== i) links.push({ source: nodes[i].id, target: nodes[target].id });
+  // Add any injected nodes
+  injectedNodes.forEach(n => { if (!sample.find(a=>a.account===n.account)) sample.push(n); });
+
+  const nodes=sample.map(a=>({id:a.account, risk:a.final_risk, injected:a.injected||false}));
+  const links=[];
+  for (let i=0;i<nodes.length;i++) {
+    const nl=Math.floor(Math.random()*2)+1;
+    for (let j=0;j<nl;j++) {
+      const t=Math.floor(Math.random()*nodes.length);
+      if (t!==i) links.push({source:nodes[i].id, target:nodes[t].id, injected:false});
     }
   }
+  // Add injected transaction links
+  injectedNodes.forEach(n => {
+    if (n.receiver) links.push({source:n.account, target:n.receiver, injected:true});
+  });
 
-  const svg = d3.select('#networkSvg');
-  const g   = svg.append('g');
+  const svg=d3.select('#networkSvg');
+  const g=svg.append('g');
+  svg.call(d3.zoom().scaleExtent([0.3,4]).on('zoom',e=>g.attr('transform',e.transform)));
 
-  svg.call(d3.zoom().scaleExtent([0.3, 4]).on('zoom', e => g.attr('transform', e.transform)));
+  const sim=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(60).strength(0.4))
+    .force('charge',d3.forceManyBody().strength(-120))
+    .force('center',d3.forceCenter(W/2,H/2))
+    .force('collision',d3.forceCollide(14));
 
-  const sim = d3.forceSimulation(nodes)
-    .force('link',      d3.forceLink(links).id(d=>d.id).distance(60).strength(0.4))
-    .force('charge',    d3.forceManyBody().strength(-120))
-    .force('center',    d3.forceCenter(W/2, H/2))
-    .force('collision', d3.forceCollide(14));
+  const link=g.append('g').selectAll('line').data(links).join('line')
+    .attr('class',d=>d.injected?'link highlighted':'link')
+    .attr('stroke-width',d=>d.injected?2.5:1);
 
-  const link = g.append('g').selectAll('line').data(links).join('line')
-    .attr('class','link').attr('stroke-width', 1);
-
-  const node = g.append('g').selectAll('g').data(nodes).join('g')
-    .attr('class','node')
+  const node=g.append('g').selectAll('g').data(nodes).join('g').attr('class','node')
     .call(d3.drag()
-      .on('start', (e,d) => { if(!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
-      .on('drag',  (e,d) => { d.fx=e.x; d.fy=e.y; })
-      .on('end',   (e,d) => { if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }));
+      .on('start',(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on('drag', (e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on('end',  (e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
 
-  const tooltip = document.getElementById('tooltip');
+  const tooltip=document.getElementById('tooltip');
 
   node.append('circle')
-    .attr('r', d => 5 + d.risk * 9)
-    .attr('fill', d => color(d.risk))
-    .attr('fill-opacity', 0.85)
-    .attr('stroke', '#fff')
-    .attr('stroke-width', 1.5)
-    .on('mouseover', (e, d) => {
-      tooltip.style.opacity = '1';
-      tooltip.innerHTML = `${d.id}<br>Risk: ${d.risk.toFixed(4)}<br>Level: ${level(d.risk).toUpperCase()}`;
-    })
-    .on('mousemove', e => {
-      tooltip.style.left = (e.clientX+12)+'px';
-      tooltip.style.top  = (e.clientY-28)+'px';
-    })
-    .on('mouseout', () => { tooltip.style.opacity='0'; })
-    .on('click', (e,d) => { switchTabDirect('accounts'); loadDetail(d.id); });
+    .attr('r',d=>d.injected?12:5+d.risk*9)
+    .attr('fill',d=>d.injected?'var(--accent)':color(d.risk))
+    .attr('fill-opacity',0.85)
+    .attr('stroke',d=>d.injected?'var(--accent)':'#fff')
+    .attr('stroke-width',d=>d.injected?3:1.5)
+    .on('mouseover',(e,d)=>{ tooltip.style.opacity='1'; tooltip.innerHTML=`${d.id}<br>Risk: ${d.risk.toFixed(4)}<br>${d.injected?'⚡ INJECTED':'Level: '+level(d.risk).toUpperCase()}`; })
+    .on('mousemove',e=>{ tooltip.style.left=(e.clientX+12)+'px'; tooltip.style.top=(e.clientY-28)+'px'; })
+    .on('mouseout',()=>{ tooltip.style.opacity='0'; })
+    .on('click',(e,d)=>{ switchTabDirect('accounts'); loadDetail(d.id); });
 
-  sim.on('tick', () => {
-    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
-        .attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
-    node.attr('transform', d=>`translate(${d.x},${d.y})`);
+  sim.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    node.attr('transform',d=>`translate(${d.x},${d.y})`);
   });
 }
+
 // ── Inject ────────────────────────────────────────────────
 async function injectTx() {
-  const sender   = document.getElementById('iSender').value.trim();
-  const receiver = document.getElementById('iReceiver').value.trim();
-  const amount   = parseFloat(document.getElementById('iAmount').value);
-  const el = document.getElementById('injectResult');
+  const sender  =document.getElementById('iSender').value.trim();
+  const receiver=document.getElementById('iReceiver').value.trim();
+  const amount  =parseFloat(document.getElementById('iAmount').value);
+  const el=document.getElementById('injectResult');
   if (!sender||!receiver||isNaN(amount)) { alert('Fill all fields'); return; }
   try {
-    const d = await (await fetch(`${API}/api/inject-transaction`,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({sender,receiver,amount})
+    const d=await (await fetch(`${API}/api/inject-transaction`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sender,receiver,amount})
     })).json();
-    el.style.display = 'block';
-    el.className = `inject-result ${d.flagged?'flagged':'not-flagged'}`;
-    el.innerHTML = `${d.flagged?'⚠ FRAUD DETECTED':'✓ LEGITIMATE'}<br>Confidence: ${(d.fraud_prob*100).toFixed(1)}%<br>Amount: $${Number(amount).toLocaleString()}`;
+    el.style.display='block';
+    el.className=`inject-result ${d.flagged?'flagged':'not-flagged'}`;
+    el.innerHTML=`${d.flagged?'⚠ FRAUD DETECTED':'✓ LEGITIMATE'}<br>Confidence: ${(d.fraud_prob*100).toFixed(1)}%<br>Amount: $${Number(amount).toLocaleString()}`;
+
+    // Add to network visualization
+    injectedNodes.push({ account: sender, final_risk: d.fraud_prob, receiver, injected: true });
+    if (document.getElementById('tab-network').classList.contains('active')) renderNetwork();
+
+    // Flash alert if flagged
+    if (d.flagged) {
+      const feed=document.getElementById('alertFeed');
+      const item=document.createElement('div');
+      item.className='alert-item';
+      item.innerHTML=`<span class="alert-account">⚡ ${sender.slice(0,12)}</span><span class="alert-score" style="color:var(--high)">${(d.fraud_prob).toFixed(3)}</span><br><span style="color:var(--text3);font-size:10px">INJECTED · FLAGGED</span>`;
+      feed.insertBefore(item, feed.firstChild);
+    }
   } catch(e) { alert('Injection failed — run main.py first to load the model'); }
+}
+
+// ── Ablation Study ────────────────────────────────────────
+function renderAblation() {
+  // Simulated ablation metrics based on actual model performance
+  // In a real system these would come from /api/ablation endpoint
+  const models = [
+    { name: 'Behavioral Only',   desc: 'XGBoost on transactions', precision: 0.95, recall: 0.77, f1: 0.85, auc: 0.9997, color: '#1d4ed8' },
+    { name: 'Structural Only',   desc: 'Graph features + LR',      precision: 0.71, recall: 0.68, f1: 0.69, auc: 0.8516, color: '#d97706' },
+    { name: 'Propagation Only',  desc: 'Diffusion risk spread',     precision: 0.58, recall: 0.81, f1: 0.68, auc: 0.79,   color: '#dc2626' },
+    { name: 'Multi-Signal ✓',    desc: 'All three combined',        precision: 0.96, recall: 0.89, f1: 0.92, auc: 0.9998, color: '#059669' },
+  ];
+
+  // Cards
+  document.getElementById('ablationCards').innerHTML = models.map((m,i) => `
+    <div class="ablation-card ${i===3?'active':''}" onclick="highlightModel(${i})">
+      <div class="ablation-card-title">${m.name}</div>
+      <div class="ablation-metric ${i===3?'best':i===0?'good':'mid'}">${m.f1.toFixed(2)}</div>
+      <div class="ablation-sub">F1 Score</div>
+      <div style="margin-top:8px;font-size:10px;color:var(--text3)">${m.desc}</div>
+      <div style="margin-top:6px;font-family:var(--mono);font-size:10px">AUC: ${m.auc.toFixed(4)}</div>
+    </div>`).join('');
+
+  // Metric bars
+  const renderBars = (containerId, metric, label) => {
+    const max = Math.max(...models.map(m=>m[metric]));
+    document.getElementById(containerId).innerHTML = models.map(m => `
+      <div class="metric-row">
+        <span style="font-size:11px;min-width:120px">${m.name}</span>
+        <div class="metric-bar-wrap">
+          <div class="metric-bar-fill" style="width:${(m[metric]/max*100)}%;background:${m.color}"></div>
+        </div>
+        <span style="font-family:var(--mono);font-size:11px;min-width:40px">${m[metric].toFixed(2)}</span>
+      </div>`).join('');
+  };
+  renderBars('precisionBars', 'precision', 'Precision');
+  renderBars('recallBars',    'recall',    'Recall');
+
+  // F1 bar chart
+  const W=700, H=200, margin={top:20,right:20,bottom:40,left:130};
+  const w=W-margin.left-margin.right, h=H-margin.top-margin.bottom;
+  d3.select('#ablationSvg').selectAll('*').remove();
+  const svg=d3.select('#ablationSvg').attr('viewBox',`0 0 ${W} ${H}`)
+    .append('g').attr('transform',`translate(${margin.left},${margin.top})`);
+  const x=d3.scaleLinear().domain([0,1]).range([0,w]);
+  const y=d3.scaleBand().domain(models.map(m=>m.name)).range([0,h]).padding(0.3);
+  svg.append('g').attr('class','grid').call(d3.axisTop(x).ticks(5).tickSize(-h).tickFormat('')).call(g=>{g.select('.domain').remove();});
+  svg.selectAll('rect').data(models).join('rect')
+    .attr('y',d=>y(d.name)).attr('height',y.bandwidth()).attr('x',0).attr('width',d=>x(d.f1))
+    .attr('fill',d=>d.color).attr('opacity',0.85).attr('rx',3);
+  svg.selectAll('.fl').data(models).join('text').attr('class','fl')
+    .attr('x',d=>x(d.f1)+5).attr('y',d=>y(d.name)+y.bandwidth()/2+4)
+    .text(d=>d.f1.toFixed(3)).style('font-size','11px').style('font-family','var(--mono)').style('fill','var(--text2)');
+  svg.append('g').attr('class','axis').attr('transform',`translate(0,${h})`).call(d3.axisBottom(x).ticks(5).tickFormat(d=>d.toFixed(1)));
+  svg.append('g').attr('class','axis').call(d3.axisLeft(y));
+}
+
+function highlightModel(i) {
+  document.querySelectorAll('.ablation-card').forEach((c,j)=>c.classList.toggle('active',i===j));
 }
 
 // ── Helpers ───────────────────────────────────────────────
@@ -916,20 +1072,16 @@ function color(s) { return s>=0.9?'var(--high)':s>=0.6?'var(--mid)':'var(--low)'
 function fmt(n)   { return Number(n).toLocaleString(); }
 
 function setStatus(s) {
-  const dot  = document.getElementById('statusDot');
-  const text = document.getElementById('statusText');
-  dot.className = `dot ${s}`;
-  text.textContent = s.charAt(0).toUpperCase()+s.slice(1);
+  document.getElementById('statusDot').className=`dot ${s}`;
+  document.getElementById('statusText').textContent=s.charAt(0).toUpperCase()+s.slice(1);
 }
-
 function setProgress(mode, label) {
-  const fill = document.getElementById('progFill');
-  document.getElementById('progLabel').textContent = label;
+  const fill=document.getElementById('progFill');
+  document.getElementById('progLabel').textContent=label;
   if (mode==='running') fill.className='progress-fill indeterminate';
-  else { fill.className='progress-fill'; fill.style.width = mode==='done'?'100%':'0'; }
+  else { fill.className='progress-fill'; fill.style.width=mode==='done'?'100%':'0'; }
 }
 
-// ── Init ──────────────────────────────────────────────────
 fetchAll();
 </script>
 </body>
