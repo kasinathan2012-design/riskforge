@@ -4,6 +4,7 @@
 import sys, os, gc, traceback, json
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
+from typing import Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -131,6 +132,20 @@ def get_results(limit: int = 500, min_risk: float = 0.0):
         "accounts":       result.to_dict(orient="records"),
     }
 
+@app.get("/api/benchmarks")
+def get_benchmarks():
+    path = "data/benchmarks.json"
+    if not os.path.exists(path):
+        return []
+    with open(path) as f:
+        return json.load(f)
+
+@app.post("/api/benchmarks")
+def save_benchmarks(papers: list[Any]):
+    path = "data/benchmarks.json"
+    with open(path, "w") as f:
+        json.dump(papers, f, indent=2)
+    return {"saved": len(papers)}
 
 @app.get("/api/account/{account_id}")
 def get_account(account_id: str):
