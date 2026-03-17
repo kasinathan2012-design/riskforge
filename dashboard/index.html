@@ -275,10 +275,11 @@ td { padding: 9px 14px; font-size: 12px; }
 
     <div class="pipeline-section">
       <div class="sidebar-label">Pipeline</div>
-      <div class="field-label">Dataset</div>
-      <select id="datasetSelect">
-        <option value="paysim">PaySim</option>
-        <option value="creditcard">Credit Card</option>
+      <div class="field-label">Analysis Mode</div>
+      <select id="datasetSelect" onchange="switchMode(this.value)">
+        <option value="combined">Combined (Multi-Signal)</option>
+        <option value="paysim">PaySim — Network Focus</option>
+        <option value="creditcard">Credit Card — Behavioral Focus</option>
       </select>
       <button class="btn btn-primary" id="runBtn" onclick="runPipeline()">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2l7 4-7 4V2z"/></svg>
@@ -322,6 +323,8 @@ td { padding: 9px 14px; font-size: 12px; }
 
   <!-- Main content -->
   <main class="content">
+    <div id="modeBanner" style="display:none;padding:10px 24px;font-size:12px;font-family:var(--mono);background:var(--surface2);border-left:3px solid var(--accent);position:sticky;top:0;z-index:100"></div>
+
 
     <!-- Overview tab -->
     <div class="tab-panel active" id="tab-overview">
@@ -554,6 +557,79 @@ function switchTabDirect(name) {
   });
 }
 
+function switchMode(mode) {
+  const modeConfig = {
+    combined: {
+      label: 'Multi-Signal Risk Monitor',
+      tag: 'Behavioral + Structural + Propagation',
+      weights: { stat: 0.40, struct: 0.30, prop: 0.30 },
+      highlight: null,
+      banner: null,
+    },
+    paysim: {
+      label: 'Network Risk Monitor',
+      tag: 'PaySim — Graph + Propagation Analysis',
+      weights: { stat: 0.10, struct: 0.45, prop: 0.45 },
+      highlight: 'network',
+      banner: { text: 'Network Mode — Structural and propagation signals weighted higher', color: 'var(--mid)' },
+    },
+    creditcard: {
+      label: 'Behavioral Risk Monitor',
+      tag: 'Credit Card — XGBoost Transaction Analysis',
+      weights: { stat: 0.80, struct: 0.10, prop: 0.10 },
+      highlight: 'accounts',
+      banner: { text: 'Behavioral Mode — XGBoost signal weighted higher', color: 'var(--accent)' },
+    },
+  };
+
+  const cfg = modeConfig[mode];
+
+  // Update header
+  document.querySelector('.logo-name').textContent = 'RiskForge';
+  document.querySelector('.logo-tag').textContent = cfg.tag;
+
+  // Show/hide mode banner
+  const banner = document.getElementById('modeBanner');
+  if (cfg.banner) {
+    banner.style.display = 'block';
+    banner.style.borderLeftColor = cfg.banner.color;
+    banner.textContent = cfg.banner.text;
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // Recompute scores with new weights and re-render
+  if (allAccounts.length) {
+    reweightScores(cfg.weights);
+  }
+}
+
+function reweightScores(weights) {
+  // Recompute final_risk with new weights without re-running pipeline
+  allAccounts = allAccounts.map(a => ({
+    ...a,
+    final_risk: Math.min(1, weights.stat * a.stat_risk + weights.struct * a.struct_risk + weights.prop * a.prop_risk)
+  }));
+
+  // Re-normalize
+  const max = Math.max(...allAccounts.map(a => a.final_risk));
+  const min = Math.min(...allAccounts.map(a => a.final_risk));
+  allAccounts = allAccounts.map(a => ({
+    ...a,
+    final_risk: (a.final_risk - min) / (max - min + 1e-9)
+  }));
+
+  // Re-sort by new final_risk
+  allAccounts.sort((a, b) => b.final_risk - a.final_risk);
+  allAccounts = allAccounts.map((a, i) => ({ ...a, rank: i + 1 }));
+
+  filteredAccounts = [...allAccounts];
+  renderTable(filteredAccounts);
+  renderTop10();
+  renderHistogram();
+  renderSignalBar();
+  renderAlertFeed();
+}
 // ── Pipeline ──────────────────────────────────────────────
 async function runPipeline() {
   const btn = document.getElementById('runBtn');
@@ -715,30 +791,108 @@ async function loadDetail(id) {
   document.getElementById('iSender').value = id;
   try {
     const d = await (await fetch(`${API}/api/account/${id}`)).json();
-    const a = d.account, txs = d.transactions||[];
+    const a = d.account, txs = d.transactions||[], stats = d.stats||{};
     const lv=level(a.final_risk), col=color(a.final_risk);
+
+    // Transaction type breakdown
+    const txTypes = stats.tx_types || {};
+    const txTypeHtml = Object.entries(txTypes).map(([type, count]) => `
+      <span style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--surface);border:1px solid var(--border);font-family:var(--mono)">${type}: ${count}</span>
+    `).join('');
+
+    // Balance change indicator
+    const balDelta = stats.balance_after - stats.balance_before;
+    const balColor = balDelta < 0 ? 'var(--high)' : 'var(--low)';
+    const balSign  = balDelta >= 0 ? '+' : '';
+
     document.getElementById('detailBody').innerHTML = `
-      <div class="detail-id">${a.account}</div>
-      <div class="detail-meta">
+
+      <!-- Account ID header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div class="detail-id">${a.account}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">
+            Active steps ${stats.first_active_step} – ${stats.last_active_step}
+          </div>
+        </div>
         <span class="badge badge-${lv}">${lv.charAt(0).toUpperCase()+lv.slice(1)} Risk</span>
-        <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:${col}">${a.final_risk.toFixed(4)}</span>
+      </div>
+
+      <!-- Risk score -->
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px">
+        <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:${col}">${a.final_risk.toFixed(4)}</span>
         <span style="font-size:11px;color:var(--text3)">Rank #${a.rank}</span>
       </div>
+
+      <!-- Operational stats grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">
+        <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:2px">TRANSACTIONS SENT</div>
+          <div style="font-family:var(--mono);font-weight:600;font-size:14px">${(stats.total_sent||0).toLocaleString()}</div>
+        </div>
+        <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:2px">TRANSACTIONS RECEIVED</div>
+          <div style="font-family:var(--mono);font-weight:600;font-size:14px">${(stats.total_received||0).toLocaleString()}</div>
+        </div>
+        <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:2px">AVG TX AMOUNT</div>
+          <div style="font-family:var(--mono);font-weight:600;font-size:14px">$${Number(stats.avg_tx_amount||0).toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+        </div>
+        <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:2px">MAX TX AMOUNT</div>
+          <div style="font-family:var(--mono);font-weight:600;font-size:14px">$${Number(stats.max_tx_amount||0).toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+        </div>
+        <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:2px">TOTAL VOLUME</div>
+          <div style="font-family:var(--mono);font-weight:600;font-size:13px">$${Number(stats.total_volume||0).toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+        </div>
+        <div style="padding:8px 10px;background:${stats.fraud_tx_count>0?'var(--high-l)':'var(--surface2)'};border-radius:var(--radius);border:1px solid ${stats.fraud_tx_count>0?'#fca5a5':'var(--border)'}">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:2px">FRAUD TRANSACTIONS</div>
+          <div style="font-family:var(--mono);font-weight:600;font-size:14px;color:${stats.fraud_tx_count>0?'var(--high)':'var(--low)'}">${stats.fraud_tx_count||0}</div>
+        </div>
+      </div>
+
+      <!-- Balance delta -->
+      <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:2px">BALANCE CHANGE</div>
+          <div style="font-family:var(--mono);font-size:12px">
+            $${Number(stats.balance_before||0).toLocaleString('en-US',{maximumFractionDigits:0})}
+            <span style="color:var(--text3)">→</span>
+            $${Number(stats.balance_after||0).toLocaleString('en-US',{maximumFractionDigits:0})}
+          </div>
+        </div>
+        <div style="font-family:var(--mono);font-weight:700;color:${balColor}">${balSign}$${Math.abs(balDelta).toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+      </div>
+
+      <!-- TX type breakdown -->
+      ${txTypeHtml ? `
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:600;letter-spacing:0.06em">TRANSACTION TYPES</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${txTypeHtml}</div>
+      </div>` : ''}
+
+      <!-- Signal breakdown -->
+      <div style="font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:600;letter-spacing:0.06em">RISK SIGNAL BREAKDOWN</div>
       <div class="score-rows">
         ${srow('Behavioral',  a.stat_risk,   '#1d4ed8')}
         ${srow('Structural',  a.struct_risk, '#d97706')}
         ${srow('Propagated',  a.prop_risk,   '#dc2626')}
         ${srow('Final Score', a.final_risk,  col)}
       </div>
+
+      <!-- Recent transactions -->
       <div class="tx-section">
         <div class="tx-section-label">Recent Transactions (${txs.length})</div>
         <div class="tx-scroll">
-          ${txs.length?txs.map(t=>`
+          ${txs.length ? txs.map(t=>`
             <div class="tx-row ${t.label?'is-fraud':''}">
+              <span style="font-size:10px;color:var(--text3);font-family:var(--mono)">${t.type||''}</span>
               <span class="tx-peer">${t.sender===id?'→ '+t.receiver:'← '+t.sender}</span>
-              <span class="tx-amt">$${Number(t.amount).toLocaleString(undefined,{maximumFractionDigits:0})}</span>
+              <span class="tx-amt">$${Number(t.amount).toLocaleString('en-US',{maximumFractionDigits:0})}</span>
               ${t.label?'<span class="tx-flag">FRAUD</span>':''}
-            </div>`).join(''):'<div style="font-size:11px;color:var(--text3)">No transactions</div>'}
+            </div>`).join('')
+            : '<div style="font-size:11px;color:var(--text3)">No transactions</div>'}
         </div>
       </div>`;
   } catch(e) {}
