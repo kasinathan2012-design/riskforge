@@ -22,8 +22,7 @@ XGBOOST_PARAMS = {
     "n_estimators": 100,
     "max_depth": 6,
     "learning_rate": 0.1,
-    "scale_pos_weight": 100,   # handles class imbalance
-    "use_label_encoder": False,
+    "scale_pos_weight": 10,   # handles class imbalance
     "eval_metric": "auc",
     "random_state": 42,
 }
