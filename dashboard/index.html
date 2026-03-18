@@ -241,6 +241,9 @@ td { padding: 9px 14px; font-size: 12px; }
       <div class="dot" id="statusDot"></div>
       <span id="statusText">Idle</span>
     </div>
+    <div id="modelStatus" style="font-size:11px;font-family:var(--mono);padding:3px 8px;border-radius:4px;background:var(--mid-l);color:var(--mid);border:1px solid var(--mid)">
+      ⏳ Model Loading...
+    </div>
     <span class="last-run" id="lastRun">—</span>
   </div>
 </header>
@@ -275,6 +278,13 @@ td { padding: 9px 14px; font-size: 12px; }
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14V6l4-4h8v12H2z"/><path d="M6 2v4H2"/><path d="M5 9h6M5 12h4"/></svg>
         Benchmarks
       </div>
+      <div class="nav-item" onclick="switchTab('simulation',event)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="6"/>
+          <path d="M6 5.5l5 2.5-5 2.5V5.5z" fill="currentColor" stroke="none"/>
+        </svg>
+        Simulation
+</div>
     </div>
 
     <div class="pipeline-section">
@@ -633,6 +643,135 @@ td { padding: 9px 14px; font-size: 12px; }
         </div>
       </div>
     </div>
+    <!-- Simulation tab -->
+    <div class="tab-panel" id="tab-simulation">
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start">
+
+        <!-- Control panel -->
+        <div class="card" style="position:sticky;top:0">
+          <div class="card-header"><div class="card-title">Scenario Control</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px">
+
+            <div>
+              <div class="field-label">Scenario</div>
+              <select id="simScenario" style="margin-bottom:0">
+                <option value="account_takeover">Account Takeover</option>
+                <option value="money_mule">Money Mule Network</option>
+                <option value="smurfing">Smurfing Attack</option>
+              </select>
+              <div id="simScenarioDesc" style="font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5">
+                Attacker gains access and systematically drains the account
+              </div>
+            </div>
+
+            <div>
+              <div class="field-label">Target Account</div>
+              <input class="search-input" id="simAccount" placeholder="Enter account ID..." style="width:100%;margin-bottom:6px"/>
+              <div style="display:flex;gap:4px">
+                <button onclick="autoSelect('low')"    style="flex:1;font-size:10px;padding:4px;border:1px solid var(--low);background:var(--low-l);color:var(--low);border-radius:4px;cursor:pointer">🟢 Low</button>
+                <button onclick="autoSelect('medium')" style="flex:1;font-size:10px;padding:4px;border:1px solid var(--mid);background:var(--mid-l);color:var(--mid);border-radius:4px;cursor:pointer">🟡 Medium</button>
+                <button onclick="autoSelect('high')"   style="flex:1;font-size:10px;padding:4px;border:1px solid var(--high);background:var(--high-l);color:var(--high);border-radius:4px;cursor:pointer">🔴 High</button>
+              </div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px">Or auto-select by risk level</div>
+            </div>
+
+            <div>
+              <div class="field-label">Step Speed</div>
+              <input type="range" id="simSpeed" min="500" max="3000" value="1200"
+                style="width:100%;accent-color:var(--accent)"/>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+                <span>Fast</span><span>Slow</span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" id="simPlayBtn" onclick="startSimulation()" style="margin-top:4px">
+              ▶ Run Simulation
+            </button>
+            <button class="btn btn-outline" onclick="resetSimulation()">↺ Reset</button>
+
+            <!-- Step counter -->
+            <div id="simStepCounter" style="text-align:center;font-family:var(--mono);font-size:11px;color:var(--text3)">
+              Step 0 / 0
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress-track">
+              <div class="progress-fill" id="simProgress" style="background:var(--accent)"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Main simulation area -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- Risk meter + scores -->
+          <div class="card">
+            <div class="card-header">
+              <div><div class="card-title">Live Risk Monitor</div><div class="card-sub" id="simAccountLabel">Account: —</div></div>
+              <span id="simStatusBadge" class="badge badge-low">IDLE</span>
+            </div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center">
+
+                <!-- Circular risk gauge -->
+                <div style="text-align:center">
+                  <svg id="riskGauge" viewBox="0 0 120 120" width="160" height="160">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="10"/>
+                    <circle id="gaugeArc" cx="60" cy="60" r="50" fill="none"
+                      stroke="var(--low)" stroke-width="10"
+                      stroke-dasharray="314" stroke-dashoffset="314"
+                      stroke-linecap="round"
+                      transform="rotate(-90 60 60)"
+                      style="transition: stroke-dashoffset 0.8s ease, stroke 0.8s ease"/>
+                    <text x="60" y="55" text-anchor="middle" font-family="IBM Plex Mono" font-size="18" font-weight="700" id="gaugeScore" fill="var(--text)">0.00</text>
+                    <text x="60" y="72" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" fill="var(--text3)">RISK SCORE</text>
+                  </svg>
+                </div>
+
+                <!-- Signal bars -->
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px">Signal Breakdown</div>
+
+                  <div style="display:flex;flex-direction:column;gap:10px" id="simSignalBars">
+                    <div class="score-row-item">
+                      <div class="score-row-top"><span class="score-row-label">Behavioral</span><span class="score-row-num" id="simStatVal" style="color:#1d4ed8">0.0000</span></div>
+                      <div class="score-track"><div class="score-fill" id="simStatBar" style="width:0%;background:#1d4ed8"></div></div>
+                    </div>
+                    <div class="score-row-item">
+                      <div class="score-row-top"><span class="score-row-label">Structural</span><span class="score-row-num" id="simStructVal" style="color:#d97706">0.0000</span></div>
+                      <div class="score-track"><div class="score-fill" id="simStructBar" style="width:0%;background:#d97706"></div></div>
+                    </div>
+                    <div class="score-row-item">
+                      <div class="score-row-top"><span class="score-row-label">Propagated</span><span class="score-row-num" id="simPropVal" style="color:#dc2626">0.0000</span></div>
+                      <div class="score-track"><div class="score-fill" id="simPropBar" style="width:0%;background:#dc2626"></div></div>
+                    </div>
+                    <div class="score-row-item">
+                      <div class="score-row-top"><span class="score-row-label">Final Score</span><span class="score-row-num" id="simFinalVal" style="color:#059669">0.0000</span></div>
+                      <div class="score-track"><div class="score-fill" id="simFinalBar" style="width:0%;background:#059669"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction timeline -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Transaction Timeline</div>
+              <span style="font-size:11px;color:var(--text3);font-family:var(--mono)" id="simBalance">Balance: —</span>
+            </div>
+            <div id="simTimeline" style="padding:12px 18px;display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto">
+              <div style="text-align:center;padding:2rem;font-size:12px;color:var(--text3)">
+                Run a simulation to see the transaction timeline
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
   </main>
 </div>
@@ -648,6 +787,172 @@ let sortKey = 'rank', sortAsc = true;
 let pollTimer = null;
 let compareA = null, compareB = null;
 let injectedNodes = [];
+
+// ── Simulation ────────────────────────────────────────────
+let simEventSource = null;
+let simRunning = false;
+
+const scenarioDescs = {
+  account_takeover: 'Attacker gains access and systematically drains the account',
+  money_mule:       'Funds passed through multiple accounts to obscure origin',
+  smurfing:         'Many small transactions designed to stay below detection thresholds',
+};
+
+document.getElementById('simScenario').addEventListener('change', function() {
+  document.getElementById('simScenarioDesc').textContent = scenarioDescs[this.value] || '';
+});
+
+function startSimulation() {
+  if (simRunning) return;
+
+  const scenario  = document.getElementById('simScenario').value;
+  const accountId = document.getElementById('simAccount').value.trim() ||
+                    (allAccounts[0] ? allAccounts[0].account : 'C84283746');
+
+  resetSimulation();
+  simRunning = true;
+
+  document.getElementById('simPlayBtn').disabled = true;
+  document.getElementById('simAccountLabel').textContent = `Account: ${accountId}`;
+  document.getElementById('simStatusBadge').textContent  = 'RUNNING';
+  document.getElementById('simStatusBadge').className    = 'badge badge-medium';
+
+  const url = `${API}/api/simulate?scenario=${scenario}&account_id=${encodeURIComponent(accountId)}`;
+  simEventSource = new EventSource(url);
+
+  simEventSource.onmessage = function(e) {
+    const step = JSON.parse(e.data);
+    updateSimulationUI(step);
+
+    if (step.done || step.error) {
+      simEventSource.close();
+      simRunning = false;
+      document.getElementById('simPlayBtn').disabled = false;
+
+      const finalRisk = step.scores?.final_risk || 0;
+      const lv = level(finalRisk);
+      document.getElementById('simStatusBadge').textContent = lv.toUpperCase() + ' RISK';
+      document.getElementById('simStatusBadge').className   = `badge badge-${lv}`;
+    }
+  };
+
+  simEventSource.onerror = function() {
+    simEventSource.close();
+    simRunning = false;
+    document.getElementById('simPlayBtn').disabled = false;
+    document.getElementById('simStatusBadge').textContent = 'ERROR';
+    document.getElementById('simStatusBadge').className   = 'badge badge-high';
+  };
+}
+
+function updateSimulationUI(step) {
+  const scores = step.scores || {};
+  const finalRisk = scores.final_risk || 0;
+
+  // Update gauge
+  const circumference = 314;
+  const offset = circumference - (finalRisk * circumference);
+  const gaugeColor = finalRisk >= 0.9 ? 'var(--high)' : finalRisk >= 0.6 ? 'var(--mid)' : 'var(--low)';
+
+  document.getElementById('gaugeArc').style.strokeDashoffset = offset;
+  document.getElementById('gaugeArc').style.stroke           = gaugeColor;
+  document.getElementById('gaugeScore').textContent          = finalRisk.toFixed(4);
+  document.getElementById('gaugeScore').setAttribute('fill', gaugeColor);
+
+  // Update signal bars
+  updateSimBar('simStat',   scores.stat_risk   || 0, '#1d4ed8');
+  updateSimBar('simStruct', scores.struct_risk || 0, '#d97706');
+  updateSimBar('simProp',   scores.prop_risk   || 0, '#dc2626');
+  updateSimBar('simFinal',  finalRisk,               gaugeColor);
+
+  // Update balance
+  if (step.balance !== undefined) {
+    document.getElementById('simBalance').textContent =
+      `Balance: $${Number(step.balance).toLocaleString('en-US', {maximumFractionDigits:0})}`;
+  }
+
+  // Update progress
+  const pct = step.total_steps > 0 ? (step.step / step.total_steps * 100) : 0;
+  document.getElementById('simProgress').style.width = pct + '%';
+  document.getElementById('simStepCounter').textContent =
+    `Step ${step.step} / ${step.total_steps}`;
+
+  // Add timeline card
+  if (step.step > 0) {
+    addTimelineCard(step, gaugeColor);
+  }
+}
+
+function updateSimBar(id, val, col) {
+  const el = document.getElementById(`${id}Val`);
+  const bar = document.getElementById(`${id}Bar`);
+  if (el)  el.textContent  = val.toFixed(4);
+  if (bar) {
+    bar.style.width      = (val * 100) + '%';
+    bar.style.background = col;
+  }
+}
+
+function addTimelineCard(step, riskColor) {
+  const timeline = document.getElementById('simTimeline');
+
+  // Remove placeholder
+  const placeholder = timeline.querySelector('[style*="text-align:center"]');
+  if (placeholder) placeholder.remove();
+
+  const card = document.createElement('div');
+  card.style.cssText = `
+    display:flex;align-items:flex-start;gap:12px;
+    padding:10px 12px;border-radius:var(--radius);
+    background:var(--surface2);border-left:3px solid ${riskColor};
+    animation:slideIn 0.3s ease;
+  `;
+  card.innerHTML = `
+    <div style="font-family:var(--mono);font-size:11px;color:var(--text3);min-width:18px;margin-top:1px">${step.step}</div>
+    <div style="flex:1">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+        <span style="font-size:12px;font-weight:600">${step.label}</span>
+        <span style="font-family:var(--mono);font-size:11px;color:${riskColor};font-weight:700">${(step.scores?.final_risk||0).toFixed(4)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${step.desc}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span style="font-size:10px;padding:1px 6px;border-radius:3px;background:var(--surface);border:1px solid var(--border);font-family:var(--mono)">${step.type}</span>
+        <span style="font-size:10px;padding:1px 6px;border-radius:3px;background:var(--surface);border:1px solid var(--border);font-family:var(--mono)">$${Number(step.amount).toLocaleString('en-US',{maximumFractionDigits:0})}</span>
+        ${step.flagged ? '<span style="font-size:10px;padding:1px 6px;border-radius:3px;background:var(--high-l);border:1px solid #fca5a5;color:var(--high);font-weight:600">⚠ FLAGGED</span>' : ''}
+        <span style="font-size:10px;padding:1px 6px;border-radius:3px;background:var(--surface);border:1px solid var(--border);font-family:var(--mono)">fraud prob: ${(step.fraud_prob*100).toFixed(1)}%</span>
+      </div>
+    </div>
+  `;
+  timeline.appendChild(card);
+  timeline.scrollTop = timeline.scrollHeight;
+}
+
+function resetSimulation() {
+  if (simEventSource) { simEventSource.close(); simEventSource = null; }
+  simRunning = false;
+
+  document.getElementById('simPlayBtn').disabled    = false;
+  document.getElementById('simProgress').style.width = '0%';
+  document.getElementById('simStepCounter').textContent = 'Step 0 / 0';
+  document.getElementById('simStatusBadge').textContent = 'IDLE';
+  document.getElementById('simStatusBadge').className   = 'badge badge-low';
+  document.getElementById('simBalance').textContent     = 'Balance: —';
+  document.getElementById('simAccountLabel').textContent = 'Account: —';
+  document.getElementById('simTimeline').innerHTML = `
+    <div style="text-align:center;padding:2rem;font-size:12px;color:var(--text3)">
+      Run a simulation to see the transaction timeline
+    </div>`;
+
+  // Reset gauge
+  document.getElementById('gaugeArc').style.strokeDashoffset = '314';
+  document.getElementById('gaugeArc').style.stroke           = 'var(--low)';
+  document.getElementById('gaugeScore').textContent          = '0.00';
+  document.getElementById('gaugeScore').setAttribute('fill', 'var(--text)');
+
+  // Reset bars
+  ['simStat','simStruct','simProp','simFinal'].forEach(id => updateSimBar(id, 0, '#9ca3af'));
+}
+
 // ── Benchmarks ────────────────────────────────────────────
 let benchmarks = [
   // Pre-loaded papers — update with real papers you find
@@ -774,6 +1079,7 @@ function switchTab(name, e) {
   if (name === 'network' && allAccounts.length) renderNetwork();
   if (name === 'ablation') renderAblation();
   if (name === 'benchmarks') renderBenchmarkTab();
+  if (name === 'simulation') { /* nothing needed on switch */ }
 }
 
 function switchTabDirect(name) {
@@ -869,7 +1175,7 @@ async function runPipeline() {
     const data = await res.json();
     if (!res.ok) { alert(data.detail || 'Reload failed — run: python main.py first'); btn.disabled=false; setProgress('idle','—'); setStatus('idle'); return; }
     await new Promise(r => setTimeout(r, 800));
-    setProgress('done', `Loaded ${Number(data.accounts).toLocaleString()} accounts`);
+    setProgress('done', `Loaded ${Number(data.accounts).toLocaleString('en-US')} accounts`);
     setStatus('ready');
     document.getElementById('lastRun').textContent = 'Updated ' + new Date().toLocaleTimeString();
     btn.disabled = false;
@@ -888,6 +1194,20 @@ async function persistBenchmarks() {
       body: JSON.stringify(benchmarks.filter(b => !b.isOurs)) // don't save ours
     });
   } catch(e) {}
+}
+
+async function autoSelect(riskLevel) {
+  try {
+    const d = await (await fetch(`${API}/api/random-account/${riskLevel}`)).json();
+    const input = document.getElementById('simAccount');
+    input.value = d.account;
+    const colors = { low: 'var(--low)', medium: 'var(--mid)', high: 'var(--high)' };
+    input.style.borderColor = colors[riskLevel];
+    input.style.transition  = 'border-color 0.3s';
+    setTimeout(() => { input.style.borderColor = ''; }, 2000);
+  } catch(e) {
+    alert(`No ${riskLevel} risk account found`);
+  }
 }
 
 async function loadBenchmarks() {
@@ -909,6 +1229,27 @@ async function fetchAll() {
   await fetchResults();
   await fetchStats();
   await loadBenchmarks();
+  await checkModelStatus();
+}
+
+async function checkModelStatus() {
+  try {
+    const d = await (await fetch(`${API}/api/status`)).json();
+    const el = document.getElementById('modelStatus');
+    if (d.model_loaded) {
+      el.style.background = 'var(--low-l)';
+      el.style.color      = 'var(--low)';
+      el.style.borderColor = 'var(--low)';
+      el.textContent      = '✓ Model Ready';
+    } else {
+      el.style.background  = 'var(--mid-l)';
+      el.style.color       = 'var(--mid)';
+      el.style.borderColor = 'var(--mid)';
+      el.textContent       = '⏳ Model Training...';
+      // Keep polling every 10 seconds until ready
+      setTimeout(checkModelStatus, 10000);
+    }
+  } catch(e) {}
 }
 
 async function fetchResults() {
@@ -975,7 +1316,7 @@ function applyFilters() {
   if (f !== 'all') r = r.filter(a => level(a.final_risk) === f);
   r = r.filter(a => a.final_risk >= threshold);
   filteredAccounts = r;
-  document.getElementById('thresholdCount').textContent = `${r.length.toLocaleString()} shown`;
+  document.getElementById('thresholdCount').textContent = `${r.length.toLocaleString('en-US')} shown`;
   renderTable(r);
 }
 
@@ -984,7 +1325,7 @@ function filterTable() { applyFilters(); }
 // ── Table ─────────────────────────────────────────────────
 function renderTable(accounts) {
   const tbody = document.getElementById('tableBody');
-  document.getElementById('rowCount').textContent = accounts.length.toLocaleString() + ' accounts';
+  document.getElementById('rowCount').textContent = accounts.length.toLocaleString('en-US') + ' accounts';
   if (!accounts.length) {
     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3);font-size:12px">No accounts match filter</td></tr>';
     return;
@@ -1082,7 +1423,7 @@ async function loadDetail(id) {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">
         <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)">
           <div style="font-size:10px;color:var(--text3);margin-bottom:2px">TRANSACTIONS SENT</div>
-          <div style="font-family:var(--mono);font-weight:600;font-size:14px">${(stats.total_sent||0).toLocaleString()}</div>
+          <div style="font-family:var(--mono);font-weight:600;font-size:14px">${(stats.total_sent||0).toLocaleString('en-US')}</div>
         </div>
         <div style="padding:8px 10px;background:${stats.is_flagged_by_system>0?'var(--high-l)':'var(--low-l)'};border-radius:var(--radius);border:1px solid ${stats.is_flagged_by_system>0?'#fca5a5':'#6ee7b7'}">
           <div style="font-size:10px;color:var(--text3);margin-bottom:2px">SYSTEM FLAGGED</div>
@@ -1400,7 +1741,7 @@ async function injectTx() {
     })).json();
     el.style.display='block';
     el.className=`inject-result ${d.flagged?'flagged':'not-flagged'}`;
-    el.innerHTML=`${d.flagged?'⚠ FRAUD DETECTED':'✓ LEGITIMATE'}<br>Confidence: ${(d.fraud_prob*100).toFixed(1)}%<br>Amount: $${Number(amount).toLocaleString()}`;
+    el.innerHTML=`${d.flagged?'⚠ FRAUD DETECTED':'✓ LEGITIMATE'}<br>Confidence: ${(d.fraud_prob*100).toFixed(1)}%<br>Amount: $${Number(amount).toLocaleString('en-US')}`;
 
     // Add to network visualization
     injectedNodes.push({ account: sender, final_risk: d.fraud_prob, receiver, injected: true });
@@ -1510,7 +1851,7 @@ function highlightModel(i) {
 // ── Helpers ───────────────────────────────────────────────
 function level(s) { return s>=0.9?'high':s>=0.6?'medium':'low'; }
 function color(s) { return s>=0.9?'var(--high)':s>=0.6?'var(--mid)':'var(--low)'; }
-function fmt(n)   { return Number(n).toLocaleString(); }
+function fmt(n)   { return Number(n).toLocaleString('en-US'); }
 
 function setStatus(s) {
   document.getElementById('statusDot').className=`dot ${s}`;
