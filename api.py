@@ -8,10 +8,16 @@ from typing import Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+
+from sklearn.preprocessing import StandardScaler
+    
+import numpy as np
 import pandas as pd
 import numpy as np
 import threading
+import joblib 
 
 from preprocess    import preprocess
 from graph_builder import build_graph, get_adjacency_matrix
@@ -79,6 +85,47 @@ def load_results_from_disk():
 
 load_results_from_disk()
 
+# Train injection model in background so startup isn't blocked
+def load_model_on_startup():
+    model_path     = "data/injection_model.pkl"
+    threshold_path = "data/injection_threshold.txt"
+    feature_path   = "data/injection_features.txt"
+
+    # Try loading from disk first
+    if os.path.exists(model_path):
+        try:
+            state["model"]        = joblib.load(model_path)
+            state["threshold"]    = float(open(threshold_path).read())
+            state["feature_cols"] = open(feature_path).read().split(",")
+            print("[API] Injection model loaded from disk instantly.")
+            return  # ← exit here, no retraining needed
+        except Exception as e:
+            print(f"[API] Could not load saved model: {e} — retraining...")
+
+    # Train and save
+    try:
+        print("[API] Training injection model on startup...")
+        from stat_engine import train_model
+        from preprocess  import preprocess
+
+        if os.path.exists(config.PAYSIM_PATH):
+            df, feature_cols = preprocess("paysim", config.PAYSIM_PATH)
+            model, threshold = train_model(df, feature_cols)
+            state["model"]        = model
+            state["threshold"]    = threshold
+            state["feature_cols"] = feature_cols
+
+            # Save to disk for next restart
+            joblib.dump(model, model_path)
+            open(threshold_path, "w").write(str(threshold))
+            open(feature_path,   "w").write(",".join(feature_cols))
+            print("[API] Injection model trained and saved to disk.")
+        else:
+            print("[API] No dataset found — injection scoring unavailable")
+    except Exception as e:
+        print(f"[API] Could not load injection model: {traceback.format_exc()}")
+
+threading.Thread(target=load_model_on_startup, daemon=True).start()
 
 # ── Request models ────────────────────────────────────────────
 class PipelineRequest(BaseModel):
@@ -192,7 +239,50 @@ def get_account(account_id: str):
         "stats":        account_stats,
     }
 
+@app.get("/api/simulate")
+def simulate(scenario: str = "account_takeover", account_id: str = "C1548769886"):
+    """
+    Stream simulation results step by step using Server-Sent Events.
+    Frontend receives each step as it's computed and animates live.
+    """
+    import json
+    import time
+    from src.simulator import run_simulation, SCENARIOS
 
+    if scenario not in SCENARIOS:
+        raise HTTPException(status_code=400, detail=f"Unknown scenario: {scenario}")
+
+    def event_stream():
+        for step_result in run_simulation(scenario, account_id, state):
+            data = json.dumps(step_result)
+            yield f"data: {data}\n\n"
+            time.sleep(1.2)  # pause between steps for animation
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control":               "no-cache",
+            "X-Accel-Buffering":           "no",
+            "Access-Control-Allow-Origin": "*",
+        }
+    )
+
+
+@app.get("/api/simulate/scenarios")
+def get_scenarios():
+    """Return available scenarios for the frontend dropdown."""
+    from src.simulator import SCENARIOS
+    return [
+        {
+            "key":         k,
+            "name":        v["name"],
+            "description": v["description"],
+            "steps":       len(v["steps"]),
+        }
+        for k, v in SCENARIOS.items()
+    ]
+    
 @app.get("/api/stats")
 def get_stats():
     if state["final_scores"] is None:
@@ -217,34 +307,88 @@ def get_ablation():
     with open(path) as f:
         return json.load(f)
 
+@app.get("/api/random-account/{risk_level}")
+def get_random_account(risk_level: str):
+    if state["final_scores"] is None:
+        raise HTTPException(status_code=404, detail="No results yet")
+    df = state["final_scores"]
 
+    if risk_level == "high":
+        pool = df[
+            (df["stat_risk"]  > 0.7) &
+            (df["prop_risk"]  > 0.7)
+        ]
+    elif risk_level == "medium":
+        pool = df[
+            (df["stat_risk"].between(0.3, 0.7)) &
+            (df["prop_risk"].between(0.3, 0.7))
+        ]
+    elif risk_level == "low":
+        pool = df[
+            (df["stat_risk"]   < 0.3) &
+            (df["prop_risk"]   < 0.3)
+        ]
+    else:
+        raise HTTPException(status_code=400, detail="risk_level must be high, medium or low")
+
+    if len(pool) == 0:
+        # fallback to final_risk thresholds
+        if risk_level == "high":
+            pool = df[df["final_risk"] >= 0.9]
+        elif risk_level == "medium":
+            pool = df[df["final_risk"].between(0.6, 0.9)]
+        else:
+            pool = df[df["final_risk"] < 0.6]
+
+    if len(pool) == 0:
+        raise HTTPException(status_code=404, detail=f"No {risk_level} risk accounts found")
+
+    sample = pool.sample(1).iloc[0]
+    return {
+        "account":    sample["account"],
+        "final_risk": float(sample["final_risk"]),
+        "stat_risk":  float(sample["stat_risk"]),
+        "struct_risk":float(sample["struct_risk"]),
+        "prop_risk":  float(sample["prop_risk"]),
+    }
+    
 @app.post("/api/inject-transaction")
 def inject_transaction(req: InjectRequest):
     if state["model"] is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Model not loaded — run main.py first to enable transaction injection."
-        )
+        raise HTTPException(status_code=404, detail="Model not loaded yet — please wait.")
+
     model        = state["model"]
     threshold    = state["threshold"]
     feature_cols = state["feature_cols"]
 
-    new_row = pd.DataFrame([{
-        "sender":             req.sender,
-        "receiver":           req.receiver,
-        "amount":             req.amount,
-        "label":              0,
-        "type":               req.tx_type,
-        "type_encoded":       0,
-        "orig_balance_delta": 0,
-        "dest_balance_delta": 0,
-        "oldbalanceOrg":      0,
-        "newbalanceOrig":     0,
-        "oldbalanceDest":     0,
-        "newbalanceDest":     0,
-        "amount_scaled":      req.amount / 1e6,
-    }])
+    amount = req.amount
 
+    if amount > 500_000:
+        # Large transfer — drain pattern matches PaySim fraud
+        row = {
+            "amount_scaled":      (amount - 179861.90) / 603858.18,
+            "type_encoded":        4,
+            "orig_balance_delta":  -amount,
+            "dest_balance_delta":  0.0,
+            "oldbalanceOrg":       amount,
+            "newbalanceOrig":      0.0,
+            "oldbalanceDest":      0.0,
+            "newbalanceDest":      0.0,
+        }
+    else:
+        # Small transfer — normal pattern
+        row = {
+            "amount_scaled":      (amount - 179861.90) / 603858.18,
+            "type_encoded":        4,
+            "orig_balance_delta":  -amount,
+            "dest_balance_delta":  amount,
+            "oldbalanceOrg":       amount * 2,
+            "newbalanceOrig":      amount,
+            "oldbalanceDest":      0.0,
+            "newbalanceDest":      amount,
+        }
+
+    new_row    = pd.DataFrame([row])
     X          = new_row[feature_cols].fillna(0)
     fraud_prob = float(model.predict_proba(X)[0][1])
     fraud_flag = int(fraud_prob >= threshold)
@@ -255,10 +399,9 @@ def inject_transaction(req: InjectRequest):
         "amount":     req.amount,
         "fraud_prob": round(fraud_prob, 4),
         "fraud_flag": fraud_flag,
-        "flagged":    fraud_flag == 1,
-        "note":       "Score based on current loaded model"
+        "flagged":    bool(fraud_flag == 1),
+        "model_used": "PaySim XGBoost",
+        "note":       "Large amounts scored as drain pattern, small as normal transfer"
     }
-
-
 # ── Serve dashboard ───────────────────────────────────────────
 app.mount("/", StaticFiles(directory="dashboard", html=True), name="dashboard")
