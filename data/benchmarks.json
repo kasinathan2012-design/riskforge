@@ -38,5 +38,25 @@
     "auc": 0.98,
     "dataset": "Credit Card",
     "isOurs": false
+  },
+  {
+    "name": "RISKFORGE (Ours)",
+    "method": "Multi-Signal Ensemble (Stat + Struct + Prop)",
+    "precision": 0.9418,
+    "recall": 0.7875,
+    "f1": 0.8578,
+    "auc": 0.9982,
+    "dataset": "PaySim",
+    "isOurs": true
+  },
+  {
+    "name": "RISKFORGE (Ours) — Cross-Dataset Generalization",
+    "method": "Multi-Signal Ensemble (Stat + Struct + Prop)",
+    "precision": 0.9132,
+    "recall": 0.7605,
+    "f1": 0.8278,
+    "auc": 0.9831,
+    "dataset": "Cifer (trained on PaySim)",
+    "isOurs": true
   }
 ]
