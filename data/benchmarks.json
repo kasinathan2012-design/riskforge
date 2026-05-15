@@ -1,42 +1,20 @@
 [
   {
-    "name": "Lopez-Rojas & Axelsson (2016)",
-    "method": "PaySim Baseline",
-    "precision": 0.001,
-    "recall": 1,
-    "f1": 0.002,
-    "auc": 0.5,
-    "dataset": "PaySim",
-    "isOurs": false
-  },
-  {
-    "name": "Zanin et al. (2018)",
-    "method": "Random Forest",
-    "precision": 0.89,
-    "recall": 0.72,
-    "f1": 0.8,
-    "auc": 0.97,
-    "dataset": "Credit Card",
-    "isOurs": false
-  },
-  {
-    "name": "Awoyemi et al. (2017)",
-    "method": "KNN + SMOTE",
-    "precision": 0.91,
-    "recall": 0.74,
-    "f1": 0.82,
-    "auc": 0.96,
-    "dataset": "Credit Card",
-    "isOurs": false
-  },
-  {
-    "name": "Ileberi et al. (2022)",
-    "method": "XGBoost",
+    "name": "Dubey et al. [32]",
+    "method": "Transformer-BDI",
     "precision": 0.93,
-    "recall": 0.76,
-    "f1": 0.84,
+    "recall": 0.92,
+    "f1": 0.92,
+    "auc": 0.987,
+    "isOurs": false
+  },
+  {
+    "name": "Fetaji et al. [33]",
+    "method": "FRAUD-X",
+    "precision": 0.95,
+    "recall": 0.94,
+    "f1": 0.94,
     "auc": 0.98,
-    "dataset": "Credit Card",
     "isOurs": false
   }
 ]
