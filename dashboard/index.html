@@ -554,19 +554,19 @@ td { padding: 9px 14px; font-size: 12px; }
             <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.08em;margin-bottom:10px">RISKFORGE — THIS WORK</div>
             <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
               <div style="text-align:center">
-                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="bm-precision">0.94</div>
+                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="bm-precision">0.96</div>
                 <div style="font-size:10px;color:var(--text3);margin-top:2px">PRECISION</div>
               </div>
               <div style="text-align:center">
-                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="bm-recall">0.79</div>
+                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="bm-recall">0.93</div>
                 <div style="font-size:10px;color:var(--text3);margin-top:2px">RECALL</div>
               </div>
               <div style="text-align:center">
-                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="bm-f1">0.86</div>
+                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="bm-f1">0.95</div>
                 <div style="font-size:10px;color:var(--text3);margin-top:2px">F1 SCORE</div>
               </div>
               <div style="text-align:center">
-                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="bm-auc">0.9982</div>
+                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="bm-auc">0.9889</div>
                 <div style="font-size:10px;color:var(--text3);margin-top:2px">ROC-AUC</div>
               </div>
               <div style="text-align:center">
@@ -587,7 +587,6 @@ td { padding: 9px 14px; font-size: 12px; }
                   <th style="text-align:center;padding:10px 14px;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.04em;border-bottom:1px solid var(--border)">RECALL</th>
                   <th style="text-align:center;padding:10px 14px;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.04em;border-bottom:1px solid var(--border)">F1</th>
                   <th style="text-align:center;padding:10px 14px;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.04em;border-bottom:1px solid var(--border)">AUC</th>
-                  <th style="text-align:center;padding:10px 14px;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.04em;border-bottom:1px solid var(--border)">DATASET</th>
                   <th style="padding:10px 14px;border-bottom:1px solid var(--border)"></th>
                 </tr>
               </thead>
@@ -604,7 +603,7 @@ td { padding: 9px 14px; font-size: 12px; }
           <!-- Add paper modal -->
           <div id="addPaperForm" style="display:none;margin-top:16px;padding:16px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)">
             <div style="font-size:12px;font-weight:600;margin-bottom:12px">Add Paper / System</div>
-            <div style="display:grid;grid-template-columns:2fr 2fr 1fr 1fr 1fr 1fr 1fr;gap:8px;align-items:end">
+            <div style="display:grid;grid-template-columns:2fr 2fr 1fr 1fr 1fr 1fr;gap:8px;align-items:end">
               <div>
                 <div class="field-label">Paper / System Name</div>
                 <input class="search-input" id="bp-name" placeholder="e.g. Lopez-Rojas et al. 2022" style="width:100%"/>
@@ -628,10 +627,6 @@ td { padding: 9px 14px; font-size: 12px; }
               <div>
                 <div class="field-label">AUC</div>
                 <input class="search-input" id="bp-auc" type="number" step="0.001" min="0" max="1" placeholder="0.00" style="width:100%"/>
-              </div>
-              <div>
-                <div class="field-label">Dataset</div>
-                <input class="search-input" id="bp-dataset" placeholder="PaySim" style="width:100%"/>
               </div>
             </div>
             <div style="display:flex;gap:8px;margin-top:10px">
@@ -1070,11 +1065,12 @@ function resetSimulation() {
 // ── Benchmarks ────────────────────────────────────────────
 let benchmarks = [
   // Pre-loaded papers — update with real papers you find
-  { name: 'Lopez-Rojas & Axelsson (2016)', method: 'PaySim Baseline',      precision: 0.001, recall: 1.00, f1: 0.002, auc: 0.50,  dataset: 'PaySim',      isOurs: false },
-  { name: 'Zanin et al. (2018)',            method: 'Random Forest',        precision: 0.89,  recall: 0.72, f1: 0.80,  auc: 0.97,  dataset: 'Credit Card', isOurs: false },
-  { name: 'Awoyemi et al. (2017)',          method: 'KNN + SMOTE',          precision: 0.91,  recall: 0.74, f1: 0.82,  auc: 0.96,  dataset: 'Credit Card', isOurs: false },
-  { name: 'Ileberi et al. (2022)',          method: 'XGBoost',              precision: 0.93,  recall: 0.76, f1: 0.84,  auc: 0.98,  dataset: 'Credit Card', isOurs: false },
-  { name: 'RiskForge (This Work)',          method: 'Multi-Signal Network', precision: 0.94,  recall: 0.79, f1: 0.86,  auc: 0.9982,dataset: 'PaySim',      isOurs: true  },
+  { name: 'Baisholan et al. [31]',          method: 'FraudX AI',            precision: 0.32,  recall: 0.93, f1: 0.48,  auc: 0.73,  isOurs: false },
+  { name: 'Damanik & Liu [30]',             method: 'K-SMOTEENN',           precision: 0.95,  recall: 0.88, f1: 0.92,  auc: 0.96,  isOurs: false },
+  { name: 'Dubey et al. [32]',              method: 'Transformer-BDI',      precision: 0.93,  recall: 0.92, f1: 0.92,  auc: 0.987, isOurs: false },
+  { name: 'Fetaji et al. [33]',             method: 'FRAUD-X',              precision: 0.95,  recall: 0.94, f1: 0.94,  auc: 0.980, isOurs: false },
+  { name: 'RiskForge (This Work)',          method: 'Multi-Signal Network', precision: 0.9618,recall: 0.9304,f1: 0.9458,auc: 0.9889,isOurs: true  },
+  { name: 'RiskForge (Cross-Study, Cifer)', method: 'Multi-Signal Network', precision: 0.9232,recall: 0.9066,f1: 0.9148,auc: 0.9831,isOurs: true  },
 ];
 
 function addBenchmark() {
@@ -1089,14 +1085,13 @@ function saveBenchmark() {
   const recall    = parseFloat(document.getElementById('bp-recall').value);
   const f1        = parseFloat(document.getElementById('bp-f1').value);
   const auc       = parseFloat(document.getElementById('bp-auc').value);
-  const dataset   = document.getElementById('bp-dataset').value.trim();
 
   if (!name || isNaN(f1)) { alert('Name and F1 are required'); return; }
 
-  benchmarks.push({ name, method, precision, recall, f1, auc, dataset, isOurs: false });
+  benchmarks.push({ name, method, precision, recall, f1, auc, isOurs: false });
   document.getElementById('addPaperForm').style.display = 'none';
 
-  ['bp-name','bp-method','bp-precision','bp-recall','bp-f1','bp-auc','bp-dataset']
+  ['bp-name','bp-method','bp-precision','bp-recall','bp-f1','bp-auc']
     .forEach(id => document.getElementById(id).value = '');
 
   renderBenchmarkTab();
@@ -1134,9 +1129,6 @@ function renderBenchmarkTab() {
         <strong>${isNaN(b.f1)?'—':b.f1.toFixed(3)}</strong>
       </td>
       <td style="padding:9px 14px;font-size:12px;text-align:center;font-family:var(--mono)">${isNaN(b.auc)?'—':b.auc.toFixed(4)}</td>
-      <td style="padding:9px 14px;font-size:11px;text-align:center">
-        <span style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border)">${b.dataset||'—'}</span>
-      </td>
       <td style="padding:9px 14px;text-align:center">
         ${b.isOurs ? '' : `<button onclick="deleteBenchmark(${i})" style="font-size:10px;padding:2px 6px;border:1px solid var(--border);background:transparent;color:var(--text3);border-radius:3px;cursor:pointer">✕</button>`}
       </td>
@@ -1907,10 +1899,10 @@ async function renderAblation() {
   // Fall back to estimates if not available yet
   if (!models) {
     models = [
-      { name:'Behavioral Only',  desc:'XGBoost on transactions', precision:0.95, recall:0.77, f1:0.85, auc:0.9997, color:'#1d4ed8' },
-      { name:'Structural Only',  desc:'Graph features + LR',      precision:0.71, recall:0.68, f1:0.69, auc:0.8516, color:'#d97706' },
-      { name:'Propagation Only', desc:'Diffusion risk spread',     precision:0.58, recall:0.81, f1:0.68, auc:0.79,   color:'#dc2626' },
-      { name:'Multi-Signal ✓',   desc:'All three combined',        precision:0.96, recall:0.89, f1:0.92, auc:0.9998, color:'#059669' },
+      { name:'Behavioral Only',  desc:'XGBoost on transactions', precision:0.9416, recall:0.9154, f1:0.9283, auc:0.9787, color:'#1d4ed8' },
+      { name:'Structural Only',  desc:'Graph features + LR',      precision:0.8702, recall:0.8730, f1:0.8716, auc:0.9302, color:'#d97706' },
+      { name:'Propagation Only', desc:'Diffusion risk spread',     precision:0.6202, recall:0.9184, f1:0.7404, auc:0.9850, color:'#dc2626' },
+      { name:'Multi-Signal ✓',   desc:'All three combined',        precision:0.9618, recall:0.9304, f1:0.9458, auc:0.9889, color:'#059669' },
     ];
   }
 
